@@ -17,9 +17,17 @@ public class JsonService {
 
         new JSONArray(response).forEach(task -> {
             JSONObject taskObj = (JSONObject) task;
-            OffsetDateTime date = OffsetDateTime.parse(taskObj.getString("dateRecorded"));
+            int id = taskObj.getInt("id");
+            String dateCreatedString = taskObj.optString("dateRecorded", null);
+            OffsetDateTime dateCreated = dateCreatedString == null ? null : OffsetDateTime.parse(dateCreatedString);
+            String dateDueString = taskObj.optString("dateDue", null);
+            OffsetDateTime dateDue = dateDueString == null ? null : OffsetDateTime.parse(dateDueString);
+            String dateCompletedString = taskObj.optString("dateCompleted", null);
+            OffsetDateTime dateCompleted = dateCompletedString == null ? null : OffsetDateTime.parse(dateCompletedString);
             String description = taskObj.getString("description");
-            taskList.add(new Task(date, description));
+            String status = taskObj.getString("status");
+            int userId = taskObj.getInt("userId");
+            taskList.add(new Task(id, dateCreated, dateDue, dateCompleted, description, status, userId));
         });
 
         return taskList;

@@ -40,7 +40,7 @@
                <TextField fx:id="tfNewTask" promptText="What's on your mind?" HBox.hgrow="ALWAYS" />
                     <Button mnemonicParsing="false" text="ADD" onAction="#addTask"/>
                     <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="UPDATE" />
-                    <Button layoutX="62.0" layoutY="10.0" mnemonicParsing="false" text="DELETE" />
+                    <Button layoutX="62.0" layoutY="10.0" mnemonicParsing="false" text="DELETE" onAction="#deleteTask" />
                 </HBox>
             </AnchorPane>
         </Tab>

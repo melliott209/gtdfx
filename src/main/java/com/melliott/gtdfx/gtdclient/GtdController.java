@@ -7,6 +7,7 @@ import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +48,11 @@ public class GtdController {
             if (newValue == null) return;
             if (newValue == tabInbox) loadTasks();
         });
+        tfNewTask.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                addTask();
+            }
+        });
     }
 
     public void loadTasks() {
@@ -65,17 +71,32 @@ public class GtdController {
     }
 
     public void addTask() {
+        if (tfNewTask.getText() == null || tfNewTask.getText().isBlank()) return;
         NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), OffsetDateTime.now(), 0);
         String json = jsonService.createNewTask(task);
         try {
             var response = httpService.post("http://localhost:8080/tasks", json);
             if (response.statusCode() == 200) {
                 alertService.info("Task added successfully");
+                tfNewTask.setText("");
                 loadTasks();
             }
             else alertService.error(response.statusCode() + ": " + response.body());
         } catch (IOException ioe) {
             alertService.error("Error while adding task: " + ioe.getMessage());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void deleteTask() {
+        if (tbInbox.getSelectionModel().isEmpty()) return;
+        Task task = tbInbox.getSelectionModel().getSelectedItem();
+        try {
+            httpService.delete("http://localhost:8080/tasks/" + task.getId());
+            loadTasks();
+        } catch (IOException ioe) {
+            alertService.error("Error while deleting task: " + ioe.getMessage());
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }

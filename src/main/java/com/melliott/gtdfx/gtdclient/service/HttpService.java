@@ -32,4 +32,12 @@ public class HttpService {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    public void delete(String s) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(s))
+                .DELETE()
+                .build();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }
