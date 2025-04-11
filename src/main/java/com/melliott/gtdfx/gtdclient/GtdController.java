@@ -6,6 +6,9 @@ import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -33,6 +36,8 @@ public class GtdController {
     @FXML TextField tfNewTask;
     @FXML Button btnAdd;
     @FXML Button btnDelete;
+
+    ListProperty<Task> inbox = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public GtdController(HttpService httpService, AlertService alertService, JsonService jsonService) {
         this.httpService = httpService;
@@ -62,13 +67,14 @@ public class GtdController {
         tbInbox.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (Boolean.FALSE.equals(newValue)) tbInbox.getSelectionModel().clearSelection();
         });
+        tbInbox.itemsProperty().bind(inbox);
     }
 
     public void loadTasks() {
         try {
-            var response = httpService.get("http://localhost:8080/tasks");
+            var response = httpService.get("http://localhost:8080/tasks?status=INBOX");
             if (response.statusCode() == 200) {
-                tbInbox.getItems().setAll(jsonService.parseTaskList(response.body()));
+                inbox.setAll(jsonService.parseTaskList(response.body()));
             }
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
