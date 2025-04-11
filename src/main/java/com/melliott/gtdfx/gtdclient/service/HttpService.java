@@ -1,5 +1,6 @@
 package com.melliott.gtdfx.gtdclient.service;
 
+import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,6 +21,15 @@ public class HttpService {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public HttpResponse<String> post(String url, String taskJson) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson))
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }

@@ -1,14 +1,12 @@
 package com.melliott.gtdfx.gtdclient;
 
+import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +32,8 @@ public class GtdController {
     @FXML
     TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
+    @FXML
+    TextField tfNewTask;
 
     public GtdController(HttpService httpService, AlertService alertService, JsonService jsonService) {
         this.httpService = httpService;
@@ -70,4 +70,17 @@ public class GtdController {
         }
     }
 
+    public void addTask() {
+        NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), OffsetDateTime.now(), 0);
+        String json = jsonService.createNewTask(task);
+        try {
+            var response = httpService.post("http://localhost:8080/tasks", json);
+            if (response.statusCode() == 200) alertService.info("Task added successfully");
+            else alertService.error("Something went wrong");
+        } catch (IOException ioe) {
+            alertService.error("Something went wrong");
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
