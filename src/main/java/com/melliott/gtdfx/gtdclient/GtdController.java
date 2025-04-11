@@ -31,6 +31,8 @@ public class GtdController {
     @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
     @FXML TextField tfNewTask;
+    @FXML Button btnAdd;
+    @FXML Button btnDelete;
 
     public GtdController(HttpService httpService, AlertService alertService, JsonService jsonService) {
         this.httpService = httpService;
@@ -54,6 +56,11 @@ public class GtdController {
             if (event.getCode() == KeyCode.ENTER) {
                 addTask();
             }
+        });
+        btnAdd.disableProperty().bind(tfNewTask.textProperty().isEmpty());
+        btnDelete.disableProperty().bind(tbInbox.getSelectionModel().selectedItemProperty().isNull());
+        tbInbox.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (Boolean.FALSE.equals(newValue)) tbInbox.getSelectionModel().clearSelection();
         });
     }
 
