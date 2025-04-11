@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 @Component
@@ -27,6 +29,7 @@ public class GtdController {
     @FXML TabPane tabPane;
     @FXML Tab tabInbox;
     @FXML TableColumn<Task, OffsetDateTime> colCreated;
+    @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
     @FXML TextField tfNewTask;
@@ -41,7 +44,33 @@ public class GtdController {
         logger.info("initializing...");
 
         colCreated.setCellValueFactory(col -> col.getValue().createdProperty());
+        colSince.setCellValueFactory(col -> col.getValue().createdProperty());
         colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
+        colCreated.setCellFactory(row -> new TableCell<>() {
+            @Override
+            protected void updateItem(OffsetDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(item.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+                }
+            }
+        });
+        colSince.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(OffsetDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(ElapsedTimeUtil.timeAgo(item, OffsetDateTime.now()));
+                }
+            }
+        });
 
         loadTasks();
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
