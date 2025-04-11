@@ -1,6 +1,7 @@
 package com.melliott.gtdfx.gtdclient;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 public class GtdController {
     private final Logger logger = Logger.getLogger(GtdController.class.getName());
     private final HttpService httpService;
+    private final AlertService alertService;
 
     @FXML
     TableColumn<Task, OffsetDateTime> colCreated;
@@ -34,8 +36,9 @@ public class GtdController {
     TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
 
-    public GtdController(HttpService httpService) {
+    public GtdController(HttpService httpService, AlertService alertService) {
         this.httpService = httpService;
+        this.alertService = alertService;
     }
 
     @FXML
@@ -55,15 +58,9 @@ public class GtdController {
                 parseJson(response);
             }
         } catch (HttpTimeoutException te) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Error");
-            alert.setContentText("The request timed out");
-            alert.showAndWait();
+            alertService.error("The request timed out");
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setContentText("Something went wrong");
-            alert.showAndWait();
+            alertService.error("Something went wrong");
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
