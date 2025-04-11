@@ -1,7 +1,6 @@
 package com.melliott.gtdfx.gtdclient.model;
 
 import javafx.beans.property.*;
-import lombok.AllArgsConstructor;
 
 import java.time.OffsetDateTime;
 

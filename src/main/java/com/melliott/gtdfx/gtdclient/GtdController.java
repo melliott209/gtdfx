@@ -5,6 +5,7 @@ import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
+import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
-import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 @Component
@@ -28,7 +27,6 @@ public class GtdController {
 
     @FXML TabPane tabPane;
     @FXML Tab tabInbox;
-    @FXML TableColumn<Task, OffsetDateTime> colCreated;
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
@@ -43,34 +41,9 @@ public class GtdController {
     public void initialize() {
         logger.info("initializing...");
 
-        colCreated.setCellValueFactory(col -> col.getValue().createdProperty());
         colSince.setCellValueFactory(col -> col.getValue().createdProperty());
         colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
-        colCreated.setCellFactory(row -> new TableCell<>() {
-            @Override
-            protected void updateItem(OffsetDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                }
-                else {
-                    setText(item.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-                }
-            }
-        });
-        colSince.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(OffsetDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(ElapsedTimeUtil.timeAgo(item, OffsetDateTime.now()));
-                }
-            }
-        });
+        colSince.setCellFactory(col -> new TimeAgoTableCell());
 
         loadTasks();
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
