@@ -23,17 +23,12 @@ public class GtdController {
     private final AlertService alertService;
     private final JsonService jsonService;
 
-    @FXML
-    TabPane tabPane;
-    @FXML
-    Tab tabInbox;
-    @FXML
-    TableColumn<Task, OffsetDateTime> colCreated;
-    @FXML
-    TableColumn<Task, String> colDesc;
+    @FXML TabPane tabPane;
+    @FXML Tab tabInbox;
+    @FXML TableColumn<Task, OffsetDateTime> colCreated;
+    @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
-    @FXML
-    TextField tfNewTask;
+    @FXML TextField tfNewTask;
 
     public GtdController(HttpService httpService, AlertService alertService, JsonService jsonService) {
         this.httpService = httpService;
@@ -41,7 +36,6 @@ public class GtdController {
         this.jsonService = jsonService;
     }
 
-    @FXML
     public void initialize() {
         logger.info("initializing...");
 
@@ -64,7 +58,7 @@ public class GtdController {
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
-            alertService.error("Something went wrong");
+            alertService.error("Error while loading tasks: " + e.getMessage());
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
@@ -75,10 +69,13 @@ public class GtdController {
         String json = jsonService.createNewTask(task);
         try {
             var response = httpService.post("http://localhost:8080/tasks", json);
-            if (response.statusCode() == 200) alertService.info("Task added successfully");
-            else alertService.error("Something went wrong");
+            if (response.statusCode() == 200) {
+                alertService.info("Task added successfully");
+                loadTasks();
+            }
+            else alertService.error(response.statusCode() + ": " + response.body());
         } catch (IOException ioe) {
-            alertService.error("Something went wrong");
+            alertService.error("Error while adding task: " + ioe.getMessage());
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }

@@ -1,6 +1,5 @@
 package com.melliott.gtdfx.gtdclient.service;
 
-import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
