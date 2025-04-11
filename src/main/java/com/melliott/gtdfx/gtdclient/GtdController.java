@@ -1,12 +1,15 @@
 package com.melliott.gtdfx.gtdclient;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.service.HttpService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,14 +22,21 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
+@Component
+@Scope("prototype")
 public class GtdController {
     private final Logger logger = Logger.getLogger(GtdController.class.getName());
+    private final HttpService httpService;
 
     @FXML
     TableColumn<Task, OffsetDateTime> colCreated;
     @FXML
     TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
+
+    public GtdController(HttpService httpService) {
+        this.httpService = httpService;
+    }
 
     @FXML
     public void initialize() {
@@ -39,13 +49,8 @@ public class GtdController {
     }
 
     public void loadTasks() {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/tasks"))
-                    .timeout(Duration.ofMillis(500))
-                    .build();
-            HttpResponse<String> response;
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            var response = httpService.get("http://localhost:8080/tasks");
             if (response.statusCode() == 200) {
                 parseJson(response);
             }

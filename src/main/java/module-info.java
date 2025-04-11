@@ -4,10 +4,15 @@ module com.melliott.gtdfx.gtdclient {
     requires java.net.http;
     requires org.json;
     requires java.sql;
+    requires spring.context;
+    requires spring.beans;
+    requires spring.core;
 
 
-    opens com.melliott.gtdfx.gtdclient to javafx.fxml;
+    opens com.melliott.gtdfx.gtdclient;
     exports com.melliott.gtdfx.gtdclient;
     exports com.melliott.gtdfx.gtdclient.model;
-    opens com.melliott.gtdfx.gtdclient.model to javafx.fxml;
+    exports com.melliott.gtdfx.gtdclient.service;
+    opens com.melliott.gtdfx.gtdclient.model;
+    opens com.melliott.gtdfx.gtdclient.service;
 }
