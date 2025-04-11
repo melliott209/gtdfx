@@ -5,6 +5,8 @@ import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.springframework.context.annotation.Scope;
@@ -23,6 +25,10 @@ public class GtdController {
     private final AlertService alertService;
     private final JsonService jsonService;
 
+    @FXML
+    TabPane tabPane;
+    @FXML
+    Tab tabInbox;
     @FXML
     TableColumn<Task, OffsetDateTime> colCreated;
     @FXML
@@ -43,6 +49,10 @@ public class GtdController {
         colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
 
         loadTasks();
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) return;
+            if (newValue == tabInbox) loadTasks();
+        });
     }
 
     public void loadTasks() {
