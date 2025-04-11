@@ -1,4 +1,4 @@
-package com.melliott.gtdfx.gtdclient;
+package com.melliott.gtdfx.gtdclient.model;
 
 import java.sql.Date;
 

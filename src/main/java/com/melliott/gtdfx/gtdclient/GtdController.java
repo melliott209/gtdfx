@@ -1,11 +1,10 @@
 package com.melliott.gtdfx.gtdclient;
 
+import com.melliott.gtdfx.gtdclient.model.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.util.converter.DateStringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,18 +14,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Date;
 import java.util.logging.Logger;
 
-public class HelloController {
-    private final Logger logger = Logger.getLogger(HelloController.class.getName());
+public class GtdController {
+    private final Logger logger = Logger.getLogger(GtdController.class.getName());
 
     @FXML
     TableColumn<Task, OffsetDateTime> colCreated;

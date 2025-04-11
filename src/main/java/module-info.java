@@ -8,4 +8,6 @@ module com.melliott.gtdfx.gtdclient {
 
     opens com.melliott.gtdfx.gtdclient to javafx.fxml;
     exports com.melliott.gtdfx.gtdclient;
+    exports com.melliott.gtdfx.gtdclient.model;
+    opens com.melliott.gtdfx.gtdclient.model to javafx.fxml;
 }
