@@ -3,24 +3,16 @@ package com.melliott.gtdfx.gtdclient;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
+import com.melliott.gtdfx.gtdclient.service.JsonService;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
-import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 @Component
@@ -29,6 +21,7 @@ public class GtdController {
     private final Logger logger = Logger.getLogger(GtdController.class.getName());
     private final HttpService httpService;
     private final AlertService alertService;
+    private final JsonService jsonService;
 
     @FXML
     TableColumn<Task, OffsetDateTime> colCreated;
@@ -36,9 +29,10 @@ public class GtdController {
     TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
 
-    public GtdController(HttpService httpService, AlertService alertService) {
+    public GtdController(HttpService httpService, AlertService alertService, JsonService jsonService) {
         this.httpService = httpService;
         this.alertService = alertService;
+        this.jsonService = jsonService;
     }
 
     @FXML
@@ -55,7 +49,7 @@ public class GtdController {
         try {
             var response = httpService.get("http://localhost:8080/tasks");
             if (response.statusCode() == 200) {
-                parseJson(response);
+                tbInbox.getItems().setAll(jsonService.parseTaskList(response.body()));
             }
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
@@ -66,18 +60,4 @@ public class GtdController {
         }
     }
 
-    private void parseJson(HttpResponse<String> response) {
-        JSONArray jsonArray = new JSONArray(response.body());
-        jsonArray.forEach(json -> {
-            JSONObject jsonObject = (JSONObject) json;
-            String dateString = jsonObject.getString("dateRecorded");
-            OffsetDateTime date = OffsetDateTime.parse(dateString);
-            logger.info("Date created: " + date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-            String description = jsonObject.getString("description");
-            logger.info("Description: " + description);
-
-            Task newTask = new Task(date, description);
-            tbInbox.getItems().add(newTask);
-        });
-    }
 }

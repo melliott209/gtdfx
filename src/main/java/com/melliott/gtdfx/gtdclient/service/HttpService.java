@@ -17,7 +17,10 @@ public class HttpService {
     }
 
     public HttpResponse<String> get(String url) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }
