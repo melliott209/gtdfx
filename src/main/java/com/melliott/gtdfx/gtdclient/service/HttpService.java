@@ -40,4 +40,13 @@ public class HttpService {
                 .build();
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    public void patch(String url, String patchObj) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(patchObj))
+                .build();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }

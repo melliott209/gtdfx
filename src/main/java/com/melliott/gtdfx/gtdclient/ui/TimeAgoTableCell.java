@@ -7,6 +7,7 @@ import javafx.scene.control.TableCell;
 import java.time.OffsetDateTime;
 
 public class TimeAgoTableCell extends TableCell<Task, OffsetDateTime> {
+
     @Override
     protected void updateItem(OffsetDateTime item, boolean empty) {
         super.updateItem(item, empty);

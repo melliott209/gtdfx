@@ -27,12 +27,16 @@
              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
              AnchorPane.topAnchor="25.0">
         <Tab fx:id="tabInbox" text="Inbox">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="200.0">
-                <TableView fx:id="tbInbox" prefHeight="311.0" prefWidth="600.0" AnchorPane.bottomAnchor="35.0"
+            <AnchorPane fx:id="inboxContainer"/>
+        </Tab>
+        <Tab text="Next">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <TableView fx:id="tbNext" prefHeight="311.0" prefWidth="600.0" AnchorPane.bottomAnchor="35.0"
                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                        <TableColumn fx:id="colSince" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Created"/>
-                        <TableColumn fx:id="colDesc" prefWidth="75.0" text="Description"/>
+                        <TableColumn fx:id="colSinceNext" maxWidth="100.0" minWidth="100.0" prefWidth="100.0"
+                                     text="Created"/>
+                        <TableColumn fx:id="colDescNext" prefWidth="75.0" text="Description"/>
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -43,15 +47,9 @@
                     <padding>
                         <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
                     </padding>
-                    <TextField fx:id="tfNewTask" promptText="What's on your mind?" HBox.hgrow="ALWAYS"/>
-                    <Button mnemonicParsing="false" onAction="#addTask" text="ADD" fx:id="btnAdd"/>
-                    <Button layoutX="62.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteTask" text="DELETE"
-                            fx:id="btnDelete"/>
+                    <Button mnemonicParsing="false" onAction="#completeTask" text="COMPLETE" fx:id="btnComplete"/>
                 </HBox>
             </AnchorPane>
-        </Tab>
-        <Tab text="Next">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
         </Tab>
         <Tab text="Waiting">
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
