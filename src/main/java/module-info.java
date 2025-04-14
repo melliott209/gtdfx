@@ -8,6 +8,7 @@ module com.melliott.gtdfx.gtdclient {
     requires spring.beans;
     requires spring.core;
     requires static lombok;
+    requires spring.jcl;
 
 
     opens com.melliott.gtdfx.gtdclient;

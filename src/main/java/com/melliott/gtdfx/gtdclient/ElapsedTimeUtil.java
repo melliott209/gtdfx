@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public class ElapsedTimeUtil {
+    private ElapsedTimeUtil() {
+    }
     public static String timeAgo(OffsetDateTime past, OffsetDateTime now) {
         if (past == null || now == null) throw new IllegalArgumentException("Must have two values to calculate the elapsed time");
         if (past.isAfter(now)) throw new IllegalArgumentException("Past time must come before now");

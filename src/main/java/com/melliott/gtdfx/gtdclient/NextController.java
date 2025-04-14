@@ -1,0 +1,72 @@
+package com.melliott.gtdfx.gtdclient;
+
+import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.service.AlertService;
+import com.melliott.gtdfx.gtdclient.service.HttpService;
+import com.melliott.gtdfx.gtdclient.service.JsonService;
+import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.net.http.HttpTimeoutException;
+import java.time.OffsetDateTime;
+
+@Component
+@Scope("prototype")
+public class NextController {
+    private static final Log log = LogFactory.getLog(NextController.class);
+    private final HttpService httpService;
+    private final AlertService alertService;
+    private final JsonService jsonService;
+    @FXML TableView<Task> tbNext;
+    @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
+    @FXML TableColumn<Task, String> colDescNext;
+    @FXML Button btnComplete;
+
+    ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    public NextController(HttpService httpService, AlertService alertService, JsonService jsonService) {
+        this.httpService = httpService;
+        this.alertService = alertService;
+        this.jsonService = jsonService;
+    }
+
+    public void initialize() {
+        log.info("initializing...");
+        colSinceNext.setCellFactory(col -> new TimeAgoTableCell());
+        colSinceNext.setCellValueFactory(col -> col.getValue().createdProperty());
+        colDescNext.setCellValueFactory(col -> col.getValue().descriptionProperty());
+        tbNext.itemsProperty().bind(next);
+
+        loadNextTasks();
+    }
+
+    public void loadNextTasks() {
+        try {
+            var response = httpService.get("http://localhost:8080/tasks?status=NEXT");
+            if (response.statusCode() == 200) {
+                next.setAll(jsonService.parseTaskList(response.body()));
+            }
+        } catch (HttpTimeoutException te) {
+            alertService.error("The request timed out");
+        } catch (IOException e) {
+            alertService.error("Error while loading tasks: " + e.getMessage());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void completeTask() {
+        log.info("completing task...");
+    }
+}
