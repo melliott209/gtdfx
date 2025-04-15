@@ -96,7 +96,7 @@ public class InboxController {
 
     public void addTask() {
         if (tfNewTask.getText() == null || tfNewTask.getText().isBlank()) return;
-        NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), OffsetDateTime.now(), 0);
+        NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), 0);
         String json = jsonService.createNewTask(task);
         try {
             var response = httpService.post("http://localhost:8080/tasks", json);

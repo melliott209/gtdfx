@@ -11,10 +11,6 @@ public class AlertService {
         alert.showAndWait();
     }
 
-    public void warn(String message) {
-        alert(Alert.AlertType.WARNING, null, message);
-    }
-
     public void info(String message) {
         alert(Alert.AlertType.INFORMATION, null, message);
     }
