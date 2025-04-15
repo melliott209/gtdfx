@@ -1,0 +1,7 @@
+.complete-table .table-cell {
+    -fx-text-fill: #aaaaaaff;
+}
+
+.complete-table .table-cell .text {
+    -fx-strikethrough: true;
+}

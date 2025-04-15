@@ -1,0 +1,81 @@
+package com.melliott.gtdfx.gtdclient;
+
+import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.service.AlertService;
+import com.melliott.gtdfx.gtdclient.service.HttpService;
+import com.melliott.gtdfx.gtdclient.service.JsonService;
+import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.net.http.HttpTimeoutException;
+import java.time.OffsetDateTime;
+
+@Component
+@Scope("prototype")
+public class CompleteController {
+    private static final Log log = LogFactory.getLog(CompleteController.class);
+    private final HttpService httpService;
+    private final AlertService alertService;
+    private final JsonService jsonService;
+    @FXML TableView<Task> tbNext;
+    @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
+    @FXML TableColumn<Task, String> colDescNext;
+    @FXML Button btnUndo;
+
+    ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    public CompleteController(HttpService httpService, AlertService alertService, JsonService jsonService) {
+        this.httpService = httpService;
+        this.alertService = alertService;
+        this.jsonService = jsonService;
+    }
+
+    public void initialize() {
+        log.info("initializing...");
+        colSinceNext.setCellFactory(col -> new TimeAgoTableCell());
+        colSinceNext.setCellValueFactory(col -> col.getValue().createdProperty());
+        colDescNext.setCellValueFactory(col -> col.getValue().descriptionProperty());
+        tbNext.itemsProperty().bind(next);
+
+        loadCompleteTasks();
+    }
+
+    public void loadCompleteTasks() {
+        try {
+            var response = httpService.get("http://localhost:8080/tasks?status=COMPLETE");
+            if (response.statusCode() == 200) {
+                next.setAll(jsonService.parseTaskList(response.body()));
+            }
+        } catch (HttpTimeoutException te) {
+            alertService.error("The request timed out");
+        } catch (IOException e) {
+            alertService.error("Error while loading tasks: " + e.getMessage());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void undoTask() {
+        log.info("completing task...");
+        try {
+            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/status",
+                    "{\"status\":\"NEXT\"}");
+            loadCompleteTasks();
+        } catch (IOException ioe) {
+            alertService.error("Error while completing task: " + ioe.getMessage());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}

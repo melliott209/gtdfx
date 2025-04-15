@@ -68,5 +68,14 @@ public class NextController {
 
     public void completeTask() {
         log.info("completing task...");
+        try {
+            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/status",
+                    "{\"status\":\"COMPLETE\"}");
+            loadNextTasks();
+        } catch (IOException ioe) {
+            alertService.error("Error while completing task: " + ioe.getMessage());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

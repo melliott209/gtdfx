@@ -23,9 +23,11 @@ public class GtdController {
 
     @FXML AnchorPane inboxContainer;
     @FXML AnchorPane nextContainer;
+    @FXML AnchorPane completeContainer;
     @FXML TabPane tabPane;
     @FXML Tab tabInbox;
     @FXML Tab tabNext;
+    @FXML Tab tabComplete;
 
     public GtdController(AlertService alertService, SpringLoader springLoader) {
         this.alertService = alertService;
@@ -40,6 +42,8 @@ public class GtdController {
                 loadTab(inboxContainer, Constants.INBOX_SCREEN);
             } else if (newValue == tabNext) {
                 loadTab(nextContainer, Constants.NEXT_SCREEN);
+            } else if (newValue == tabComplete) {
+                loadTab(completeContainer, Constants.COMPLETE_SCREEN);
             }
         });
         loadTab(inboxContainer, Constants.INBOX_SCREEN);
