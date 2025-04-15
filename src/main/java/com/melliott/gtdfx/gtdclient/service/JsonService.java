@@ -4,13 +4,11 @@ import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 public class JsonService {
     public List<Task> parseTaskList(String response) {
         List<Task> taskList = new ArrayList<>();

@@ -1,26 +1,26 @@
 package com.melliott.gtdfx.gtdclient;
 
+import com.melliott.gtdfx.gtdclient.controller.GtdController;
+import com.melliott.gtdfx.gtdclient.service.AppServices;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
 
 public class GtdApplication extends Application {
-    private ConfigurableApplicationContext context;
+    private AppServices services;
 
     @Override
     public void init() {
-        this.context = new AnnotationConfigApplicationContext(AppConfig.class);
+        this.services = new AppServices();
     }
 
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GtdApplication.class.getResource("gtd.fxml"));
-        fxmlLoader.setController(context.getBean(GtdController.class));
+        fxmlLoader.setControllerFactory(param -> new GtdController(services));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("gtdFX");
         stage.setScene(scene);

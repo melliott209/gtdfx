@@ -1,7 +1,8 @@
-package com.melliott.gtdfx.gtdclient;
+package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
+import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
@@ -14,20 +15,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.logging.Logger;
 
-@Component
-@Scope("prototype")
 public class CompleteController {
-    private static final Log log = LogFactory.getLog(CompleteController.class);
+    private static final Logger logger = Logger.getLogger(CompleteController.class.getName());
     private final HttpService httpService;
     private final AlertService alertService;
     private final JsonService jsonService;
@@ -40,14 +36,14 @@ public class CompleteController {
 
     ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public CompleteController(HttpService httpService, AlertService alertService, JsonService jsonService) {
-        this.httpService = httpService;
-        this.alertService = alertService;
-        this.jsonService = jsonService;
+    public CompleteController(AppServices appServices) {
+        this.httpService = appServices.httpService;
+        this.alertService = appServices.alertService;
+        this.jsonService = appServices.jsonService;
     }
 
     public void initialize() {
-        log.info("initializing...");
+        logger.info("initializing...");
         colCreated.setCellValueFactory(col -> col.getValue().createdProperty());
         colFinished.setCellValueFactory(col -> col.getValue().completedProperty());
         colElapsed.setCellValueFactory(col -> new SimpleObjectProperty<>(Duration.between(col.getValue().getCreated(), col.getValue().getCompleted())));
@@ -78,7 +74,7 @@ public class CompleteController {
     }
 
     public void undoTask() {
-        log.info("completing task...");
+        logger.info("completing task...");
         try {
             httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/status",
                     "{\"status\":\"NEXT\"}");

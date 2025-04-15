@@ -1,9 +1,7 @@
 package com.melliott.gtdfx.gtdclient.service;
 
 import javafx.scene.control.Alert;
-import org.springframework.stereotype.Service;
 
-@Service
 public class AlertService {
     public void alert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);

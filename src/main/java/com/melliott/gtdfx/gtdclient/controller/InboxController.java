@@ -1,8 +1,9 @@
-package com.melliott.gtdfx.gtdclient;
+package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
+import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
@@ -12,16 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
 import java.time.OffsetDateTime;
 import java.util.logging.Logger;
 
-@Component
-@Scope("prototype")
 public class InboxController {
     private final Logger logger = Logger.getLogger(InboxController.class.getName());
     private final ListProperty<Task> inbox = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -35,10 +32,10 @@ public class InboxController {
     @FXML Button btnAdd;
     @FXML Button btnDelete;
 
-    public InboxController(HttpService httpService, AlertService alertService, JsonService jsonService) {
-        this.httpService = httpService;
-        this.alertService = alertService;
-        this.jsonService = jsonService;
+    public InboxController(AppServices appServices) {
+        this.httpService = appServices.httpService;
+        this.alertService = appServices.alertService;
+        this.jsonService = appServices.jsonService;
     }
 
     public void initialize() {

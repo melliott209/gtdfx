@@ -1,25 +1,23 @@
-package com.melliott.gtdfx.gtdclient;
+package com.melliott.gtdfx.gtdclient.controller;
 
+import com.melliott.gtdfx.gtdclient.Constants;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
-import com.melliott.gtdfx.gtdclient.service.SpringLoader;
+import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.service.ViewLoader;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
-@Component
-@Scope("prototype")
 public class GtdController {
     private final Logger logger = Logger.getLogger(GtdController.class.getName());
     private final AlertService alertService;
-    private final SpringLoader springLoader;
+    private final ViewLoader viewLoader;
 
     @FXML AnchorPane inboxContainer;
     @FXML AnchorPane nextContainer;
@@ -29,9 +27,10 @@ public class GtdController {
     @FXML Tab tabNext;
     @FXML Tab tabComplete;
 
-    public GtdController(AlertService alertService, SpringLoader springLoader) {
-        this.alertService = alertService;
-        this.springLoader = springLoader;
+    public GtdController(AppServices services) {
+        this.alertService = services.alertService;
+        this.viewLoader = new ViewLoader(services);
+        logger.info("Created GTD Controller");
     }
 
     public void initialize() {
@@ -51,7 +50,7 @@ public class GtdController {
 
     private void loadTab(Pane root, String fxmlPath) {
         try {
-            Node screen = springLoader.loadScreen(fxmlPath);
+            Node screen = viewLoader.load(fxmlPath);
             root.getChildren().setAll(screen);
         } catch (IOException e) {
             alertService.error("Failed to load screen: " + e.getMessage());

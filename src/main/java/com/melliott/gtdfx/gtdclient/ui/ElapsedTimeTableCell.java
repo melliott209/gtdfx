@@ -1,7 +1,7 @@
 package com.melliott.gtdfx.gtdclient.ui;
 
-import com.melliott.gtdfx.gtdclient.ElapsedTimeUtil;
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.util.ElapsedTimeUtil;
 import javafx.scene.control.TableCell;
 
 import java.time.Duration;
