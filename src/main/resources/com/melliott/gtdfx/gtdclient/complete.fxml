@@ -10,7 +10,9 @@
                stylesheets="@../../../../css/style.css" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columns>
-            <TableColumn fx:id="colSinceNext" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Created"/>
+            <TableColumn fx:id="colCreated" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Created"/>
+            <TableColumn fx:id="colFinished" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Finished"/>
+            <TableColumn fx:id="colElapsed" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Elapsed"/>
             <TableColumn fx:id="colDescNext" prefWidth="75.0" text="Description"/>
         </columns>
         <columnResizePolicy>

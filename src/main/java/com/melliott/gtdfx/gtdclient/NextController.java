@@ -69,8 +69,8 @@ public class NextController {
     public void completeTask() {
         log.info("completing task...");
         try {
-            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/status",
-                    "{\"status\":\"COMPLETE\"}");
+            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/complete",
+                    "{\"status\":\"COMPLETE\", \"dateCompleted\":\"" + OffsetDateTime.now() + "\"}");
             loadNextTasks();
         } catch (IOException ioe) {
             alertService.error("Error while completing task: " + ioe.getMessage());
