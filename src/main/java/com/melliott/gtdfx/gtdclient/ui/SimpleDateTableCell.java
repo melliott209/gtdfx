@@ -15,7 +15,7 @@ public class SimpleDateTableCell extends TableCell<Task, OffsetDateTime> {
             setText(null);
             setGraphic(null);
         } else {
-            setText(item.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+            setText(item.format(DateTimeFormatter.ofPattern("MM/dd hh:mm a")));
         }
     }
 }

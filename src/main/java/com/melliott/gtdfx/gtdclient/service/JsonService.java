@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +18,11 @@ public class JsonService {
             JSONObject taskObj = (JSONObject) task;
             int id = taskObj.getInt("id");
             String dateCreatedString = taskObj.optString("dateRecorded", null);
-            OffsetDateTime dateCreated = dateCreatedString == null ? null : OffsetDateTime.parse(dateCreatedString);
+            OffsetDateTime dateCreated = dateCreatedString == null ? null : OffsetDateTime.parse(dateCreatedString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
             String dateDueString = taskObj.optString("dateDue", null);
-            OffsetDateTime dateDue = dateDueString == null ? null : OffsetDateTime.parse(dateDueString);
+            OffsetDateTime dateDue = dateDueString == null ? null : OffsetDateTime.parse(dateDueString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
             String dateCompletedString = taskObj.optString("dateCompleted", null);
-            OffsetDateTime dateCompleted = dateCompletedString == null ? null : OffsetDateTime.parse(dateCompletedString);
+            OffsetDateTime dateCompleted = dateCompletedString == null ? null : OffsetDateTime.parse(dateCompletedString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
             String description = taskObj.getString("description");
             String status = taskObj.getString("status");
             int userId = taskObj.getInt("userId");

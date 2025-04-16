@@ -65,7 +65,7 @@ public class NextController {
     public void completeTask() {
         logger.info("completing task...");
         try {
-            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/complete",
+            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId(),
                     "{\"status\":\"COMPLETE\", \"dateCompleted\":\"" + OffsetDateTime.now() + "\"}");
             loadNextTasks();
         } catch (IOException ioe) {

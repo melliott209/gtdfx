@@ -76,8 +76,8 @@ public class CompleteController {
     public void undoTask() {
         logger.info("completing task...");
         try {
-            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId() + "/status",
-                    "{\"status\":\"NEXT\"}");
+            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId(),
+                    "{\"status\":\"NEXT\",\"dateCompleted\":null}");
             loadCompleteTasks();
         } catch (IOException ioe) {
             alertService.error("Error while completing task: " + ioe.getMessage());

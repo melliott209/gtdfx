@@ -46,7 +46,7 @@ public class InboxController {
         toNext.setOnAction(event -> {
             Task task = tbInbox.getSelectionModel().getSelectedItem();
             try {
-                httpService.patch("http://localhost:8080/tasks/" + task.getId() + "/status", "{\"status\":\"NEXT\"}");
+                httpService.patch("http://localhost:8080/tasks/" + task.getId(), "{\"status\":\"NEXT\"}");
                 loadTasks();
             } catch (IOException e) {
                 alertService.error("Error while updating task: " + e.getMessage());
@@ -100,7 +100,7 @@ public class InboxController {
         String json = jsonService.createNewTask(task);
         try {
             var response = httpService.post("http://localhost:8080/tasks", json);
-            if (response.statusCode() == 200) {
+            if (response.statusCode() == 201) {
                 alertService.info("Task added successfully");
                 tfNewTask.setText("");
                 loadTasks();
