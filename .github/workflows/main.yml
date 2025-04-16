@@ -1,0 +1,40 @@
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+          distribution: 'temurin'
+          java-version: '21'
+      
+    - name: Set up Maven
+      uses: s4u/setup-maven-action@v1.18.0
+      with:
+          maven-version: '3.8.5'
+
+    - name: Build with Maven
+      run: mvn clean package
+
+    - name: Package native app
+      run: |
+        jpackage \
+        --input target \
+        --name gtdFX \
+        --module-path "target/libs;target/classes" \
+        --module com.melliott.gtdfx.gtdclient/com.melliott.gtdfx.gtdclient.GtdApplication \
+        --type app-image \
+        --version 0.1.0
+
+    - name: Upload artifact to Github
+      uses: actions/upload-artifact@v4
+      with:
+          name: ${{ runner.os }}-gtdFX
+          path: ./gtdFX*
