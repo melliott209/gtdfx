@@ -26,12 +26,12 @@ jobs:
 
     - name: Package native app
       run: |
-        jpackage \
-        --input target \
-        --name gtdFX \
-        --module-path "target/libs;target/classes" \
-        --module com.melliott.gtdfx.gtdclient/com.melliott.gtdfx.gtdclient.GtdApplication \
-        --type app-image \
+        jpackage `
+        --input target `
+        --name gtdFX `
+        --module-path "target/libs;target/classes" `
+        --module com.melliott.gtdfx.gtdclient/com.melliott.gtdfx.gtdclient.GtdApplication `
+        --type app-image `
         --version 0.1.0
 
     - name: Upload artifact to Github
