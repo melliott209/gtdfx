@@ -2,11 +2,11 @@ package com.melliott.gtdfx.gtdclient.service;
 
 import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.util.TimeUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +18,11 @@ public class JsonService {
             JSONObject taskObj = (JSONObject) task;
             int id = taskObj.getInt("id");
             String dateCreatedString = taskObj.optString("dateRecorded", null);
-            OffsetDateTime dateCreated = dateCreatedString == null ? null : OffsetDateTime.parse(dateCreatedString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
+            OffsetDateTime dateCreated = dateCreatedString == null ? null : TimeUtil.getLocalTimeFromString(dateCreatedString);
             String dateDueString = taskObj.optString("dateDue", null);
-            OffsetDateTime dateDue = dateDueString == null ? null : OffsetDateTime.parse(dateDueString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
+            OffsetDateTime dateDue = dateDueString == null ? null : TimeUtil.getLocalTimeFromString(dateDueString);
             String dateCompletedString = taskObj.optString("dateCompleted", null);
-            OffsetDateTime dateCompleted = dateCompletedString == null ? null : OffsetDateTime.parse(dateCompletedString).atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime();
+            OffsetDateTime dateCompleted = dateCompletedString == null ? null : TimeUtil.getLocalTimeFromString(dateCompletedString);
             String description = taskObj.getString("description");
             String status = taskObj.getString("status");
             int userId = taskObj.getInt("userId");

@@ -2,14 +2,15 @@ package com.melliott.gtdfx.gtdclient.util;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
-public class ElapsedTimeUtil {
+public class TimeUtil {
     private static final int SECONDS_PER_MINUTE = 60;
     private static final int MINUTES_PER_HOUR = 60;
     private static final int HOURS_PER_DAY = 24;
     private static final int DAYS_PER_WEEK = 7;
 
-    private ElapsedTimeUtil() {
+    private TimeUtil() {
     }
 
     public static String timeAgo(OffsetDateTime past, OffsetDateTime now) {
@@ -42,5 +43,11 @@ public class ElapsedTimeUtil {
         else if (hours < HOURS_PER_DAY) return hours + " h";
         else if (days < DAYS_PER_WEEK) return days + " d";
         else return weeks + " w";
+    }
+
+    public static OffsetDateTime getLocalTimeFromString(String dateCreatedString) {
+        return OffsetDateTime.parse(dateCreatedString)
+                .atZoneSameInstant(ZoneId.systemDefault())
+                .toOffsetDateTime();
     }
 }
