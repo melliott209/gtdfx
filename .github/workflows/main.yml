@@ -32,7 +32,7 @@ jobs:
         --module-path "target/libs;target/classes" `
         --module com.melliott.gtdfx.gtdclient/com.melliott.gtdfx.gtdclient.GtdApplication `
         --type app-image `
-        --version 0.1.0
+        --app-version 0.1.0
 
     - name: Zip app-image
       run: Compress-Archive -Path .\GtdApplication\* -DestinationPath gtdFX.zip
