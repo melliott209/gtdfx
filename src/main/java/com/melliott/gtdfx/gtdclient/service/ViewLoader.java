@@ -1,9 +1,6 @@
 package com.melliott.gtdfx.gtdclient.service;
 
-import com.melliott.gtdfx.gtdclient.controller.CompleteController;
-import com.melliott.gtdfx.gtdclient.controller.GtdController;
-import com.melliott.gtdfx.gtdclient.controller.InboxController;
-import com.melliott.gtdfx.gtdclient.controller.NextController;
+import com.melliott.gtdfx.gtdclient.controller.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 
@@ -23,6 +20,9 @@ public class ViewLoader {
             else if (param == CompleteController.class) return new CompleteController(services);
             else if (param == NextController.class) return new NextController(services);
             else if (param == GtdController.class) return new GtdController(services);
+            else if (param == WaitingController.class) return new WaitingController(services);
+            else if (param == SomedayController.class) return new SomedayController(services);
+//            else if (param == ProjectsController.class) return new ProjectsController(services);
 
             throw new IllegalArgumentException("Unknown controller type: " + param);
         });

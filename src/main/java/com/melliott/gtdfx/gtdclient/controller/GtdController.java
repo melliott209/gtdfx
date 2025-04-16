@@ -21,10 +21,16 @@ public class GtdController {
 
     @FXML AnchorPane inboxContainer;
     @FXML AnchorPane nextContainer;
+    @FXML AnchorPane waitingContainer;
+    @FXML AnchorPane projectsContainer;
+    @FXML AnchorPane somedayContainer;
     @FXML AnchorPane completeContainer;
     @FXML TabPane tabPane;
     @FXML Tab tabInbox;
     @FXML Tab tabNext;
+    @FXML Tab tabWaiting;
+    @FXML Tab tabProjects;
+    @FXML Tab tabSomeday;
     @FXML Tab tabComplete;
 
     public GtdController(AppServices services) {
@@ -41,6 +47,12 @@ public class GtdController {
                 loadTab(inboxContainer, Constants.INBOX_SCREEN);
             } else if (newValue == tabNext) {
                 loadTab(nextContainer, Constants.NEXT_SCREEN);
+            } else if (newValue == tabWaiting) {
+                loadTab(waitingContainer, Constants.WAITING_SCREEN);
+            } else if (newValue == tabProjects) {
+                loadTab(projectsContainer, Constants.PROJECTS_SCREEN);
+            } else if (newValue == tabSomeday) {
+                loadTab(somedayContainer, Constants.SOMEDAY_SCREEN);
             } else if (newValue == tabComplete) {
                 loadTab(completeContainer, Constants.COMPLETE_SCREEN);
             }

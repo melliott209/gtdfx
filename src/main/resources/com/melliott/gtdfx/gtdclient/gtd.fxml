@@ -33,14 +33,14 @@
         <Tab fx:id="tabNext" text="Next">
             <AnchorPane fx:id="nextContainer"/>
         </Tab>
-        <Tab text="Waiting">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+        <Tab fx:id="tabWaiting" text="Waiting">
+            <AnchorPane fx:id="waitingContainer"/>
         </Tab>
-        <Tab text="Projects">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+        <Tab fx:id="tabProjects" text="Projects">
+            <AnchorPane fx:id="projectsContainer"/>
         </Tab>
-        <Tab text="Someday">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+        <Tab fx:id="tabSomeday" text="Someday">
+            <AnchorPane fx:id="somedayContainer"/>
         </Tab>
         <Tab fx:id="tabComplete" text="Completed">
             <AnchorPane fx:id="completeContainer"/>
