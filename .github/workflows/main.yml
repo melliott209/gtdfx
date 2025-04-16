@@ -37,8 +37,15 @@ jobs:
     - name: Zip app-image
       run: Compress-Archive -Path ./gtdFX -DestinationPath gtdFX.zip
 
-    - name: Upload artifact to Github
+    - name: Create workflow artifact
       uses: actions/upload-artifact@v4
       with:
           name: ${{ runner.os }}-gtdFX
           path: gtdFX.zip
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        files: gtdFX.zip
