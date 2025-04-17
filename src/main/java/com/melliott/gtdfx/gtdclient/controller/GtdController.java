@@ -1,6 +1,7 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.Constants;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.service.ViewLoader;
@@ -33,9 +34,9 @@ public class GtdController {
     @FXML Tab tabSomeday;
     @FXML Tab tabComplete;
 
-    public GtdController(AppServices services) {
+    public GtdController(AppServices services, TaskRepository taskRepository) {
         this.alertService = services.alertService;
-        this.viewLoader = new ViewLoader(services);
+        this.viewLoader = new ViewLoader(services, taskRepository);
         logger.info("Created GTD Controller");
     }
 

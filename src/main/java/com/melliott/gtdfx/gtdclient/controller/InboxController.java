@@ -2,10 +2,10 @@ package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
-import com.melliott.gtdfx.gtdclient.service.HttpService;
-import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -22,9 +22,8 @@ import java.util.logging.Logger;
 public class InboxController {
     private final Logger logger = Logger.getLogger(InboxController.class.getName());
     private final ListProperty<Task> inbox = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final HttpService httpService;
     private final AlertService alertService;
-    private final JsonService jsonService;
+    private final TaskRepository taskRepository;
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbInbox;
@@ -32,10 +31,9 @@ public class InboxController {
     @FXML Button btnAdd;
     @FXML Button btnDelete;
 
-    public InboxController(AppServices appServices) {
-        this.httpService = appServices.httpService;
+    public InboxController(AppServices appServices, TaskRepository taskRepository) {
         this.alertService = appServices.alertService;
-        this.jsonService = appServices.jsonService;
+        this.taskRepository = taskRepository;
     }
 
     public void initialize() {
@@ -44,15 +42,9 @@ public class InboxController {
         Menu moveTo = new Menu("Move to...");
         MenuItem toNext = new MenuItem("Next");
         toNext.setOnAction(event -> {
-            Task task = tbInbox.getSelectionModel().getSelectedItem();
-            try {
-                httpService.patch("http://localhost:8080/tasks/" + task.getId(), "{\"status\":\"NEXT\"}");
-                loadTasks();
-            } catch (IOException e) {
-                alertService.error("Error while updating task: " + e.getMessage());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            TaskUpdateDTO task = new TaskUpdateDTO(tbInbox.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("NEXT");
+            updateTask(task);
         });
         moveTo.getItems().add(toNext);
         contextMenu.getItems().add(moveTo);
@@ -76,15 +68,12 @@ public class InboxController {
         btnDelete.disableProperty().bind(tbInbox.getSelectionModel().selectedItemProperty().isNull());
         tbInbox.itemsProperty().bind(inbox);
 
-        loadTasks();
+        getTasks();
     }
 
-    public void loadTasks() {
+    public void getTasks() {
         try {
-            var response = httpService.get("http://localhost:8080/tasks?status=INBOX");
-            if (response.statusCode() == 200) {
-                inbox.setAll(jsonService.parseTaskList(response.body()));
-            }
+            inbox.setAll(taskRepository.getTasks("INBOX"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -97,14 +86,12 @@ public class InboxController {
     public void addTask() {
         if (tfNewTask.getText() == null || tfNewTask.getText().isBlank()) return;
         NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), 0);
-        String json = jsonService.createNewTask(task);
         try {
-            var response = httpService.post("http://localhost:8080/tasks", json);
-            if (response.statusCode() == 201) {
+            if (taskRepository.addTask(task)) {
                 alertService.info("Task added successfully");
                 tfNewTask.setText("");
-                loadTasks();
-            } else alertService.error(response.statusCode() + ": " + response.body());
+                getTasks();
+            } else alertService.error("Error while adding task");
         } catch (IOException ioe) {
             alertService.error("Error while adding task: " + ioe.getMessage());
         } catch (InterruptedException ie) {
@@ -112,12 +99,24 @@ public class InboxController {
         }
     }
 
+    private void updateTask(TaskUpdateDTO task) {
+        try {
+            if (!taskRepository.updateTask(task)) alertService.error("The task to be updated was not found");
+            getTasks();
+        } catch (IOException e) {
+            alertService.error("Error while updating task: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     public void deleteTask() {
         if (tbInbox.getSelectionModel().isEmpty()) return;
-        Task task = tbInbox.getSelectionModel().getSelectedItem();
         try {
-            httpService.delete("http://localhost:8080/tasks/" + task.getId());
-            loadTasks();
+            if (!taskRepository.deleteTask(tbInbox.getSelectionModel().getSelectedItem().getId())) {
+                alertService.error("The task to be deleted was not found");
+            }
+            getTasks();
         } catch (IOException ioe) {
             alertService.error("Error while deleting task: " + ioe.getMessage());
         } catch (InterruptedException ie) {

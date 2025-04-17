@@ -30,20 +30,20 @@ public class HttpService {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public void delete(String s) throws IOException, InterruptedException {
+    public HttpResponse<String> delete(String s) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(s))
                 .DELETE()
                 .build();
-        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public void patch(String url, String patchObj) throws IOException, InterruptedException {
+    public HttpResponse<String> patch(String url, String patchObj) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(patchObj))
                 .build();
-        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }
