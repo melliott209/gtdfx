@@ -1,10 +1,10 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
-import com.melliott.gtdfx.gtdclient.service.HttpService;
-import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -21,9 +21,8 @@ import java.util.logging.Logger;
 
 public class NextController {
     private static final Logger logger = Logger.getLogger(NextController.class.getName());
-    private final HttpService httpService;
     private final AlertService alertService;
-    private final JsonService jsonService;
+    private final TaskRepository taskRepository;
     @FXML TableView<Task> tbNext;
     @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
     @FXML TableColumn<Task, String> colDescNext;
@@ -31,10 +30,9 @@ public class NextController {
 
     ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public NextController(AppServices appServices) {
-        this.httpService = appServices.httpService;
+    public NextController(AppServices appServices, TaskRepository taskRepository) {
         this.alertService = appServices.alertService;
-        this.jsonService = appServices.jsonService;
+        this.taskRepository = taskRepository;
     }
 
     public void initialize() {
@@ -49,10 +47,7 @@ public class NextController {
 
     public void loadNextTasks() {
         try {
-            var response = httpService.get("http://localhost:8080/tasks?status=NEXT");
-            if (response.statusCode() == 200) {
-                next.setAll(jsonService.parseTaskList(response.body()));
-            }
+            next.setAll(taskRepository.getTasks("NEXT"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -65,8 +60,10 @@ public class NextController {
     public void completeTask() {
         logger.info("completing task...");
         try {
-            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId(),
-                    "{\"status\":\"COMPLETE\", \"dateCompleted\":\"" + OffsetDateTime.now() + "\"}");
+            TaskUpdateDTO task = new TaskUpdateDTO(tbNext.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("COMPLETE");
+            task.setDateCompleted(OffsetDateTime.now());
+            taskRepository.updateTask(task);
             loadNextTasks();
         } catch (IOException ioe) {
             alertService.error("Error while completing task: " + ioe.getMessage());
