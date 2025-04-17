@@ -21,12 +21,12 @@ import java.util.logging.Logger;
 
 public class InboxController {
     private final Logger logger = Logger.getLogger(InboxController.class.getName());
-    private final ListProperty<Task> inbox = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<Task> tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final AlertService alertService;
     private final TaskRepository taskRepository;
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
-    @FXML TableView<Task> tbInbox;
+    @FXML TableView<Task> tbTasks;
     @FXML TextField tfNewTask;
     @FXML Button btnAdd;
     @FXML Button btnDelete;
@@ -38,22 +38,7 @@ public class InboxController {
 
     public void initialize() {
         logger.info("Initializing InboxController...");
-        ContextMenu contextMenu = new ContextMenu();
-        Menu moveTo = new Menu("Move to...");
-        MenuItem toNext = new MenuItem("Next");
-        toNext.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbInbox.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("NEXT");
-            updateTask(task);
-        });
-        moveTo.getItems().add(toNext);
-        contextMenu.getItems().add(moveTo);
-
-        tbInbox.setRowFactory(tv -> {
-            TableRow<Task> row = new TableRow<>();
-            row.setContextMenu(contextMenu);
-            return row;
-        });
+        setContextMenu();
 
         colSince.setCellValueFactory(col -> col.getValue().createdProperty());
         colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
@@ -65,15 +50,45 @@ public class InboxController {
             }
         });
         btnAdd.disableProperty().bind(tfNewTask.textProperty().isEmpty());
-        btnDelete.disableProperty().bind(tbInbox.getSelectionModel().selectedItemProperty().isNull());
-        tbInbox.itemsProperty().bind(inbox);
+        btnDelete.disableProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNull());
+        tbTasks.itemsProperty().bind(tasks);
 
         getTasks();
     }
 
+    private void setContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        Menu moveTo = new Menu("Move to...");
+        MenuItem toNext = new MenuItem("Next");
+        toNext.setOnAction(event -> {
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("NEXT");
+            updateTask(task);
+        });
+        MenuItem toWaiting = new MenuItem("Waiting");
+        toWaiting.setOnAction(event -> {
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("WAITING");
+            updateTask(task);
+        });
+        MenuItem toSomeday = new MenuItem("Someday");
+        toSomeday.setOnAction(event -> {
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("SOMEDAY");
+            updateTask(task);
+        });
+        moveTo.getItems().addAll(toNext, toWaiting, toSomeday);
+        contextMenu.getItems().add(moveTo);
+        tbTasks.setRowFactory(tv -> {
+            TableRow<Task> row = new TableRow<>();
+            row.setContextMenu(contextMenu);
+            return row;
+        });
+    }
+
     public void getTasks() {
         try {
-            inbox.setAll(taskRepository.getTasks("INBOX"));
+            tasks.setAll(taskRepository.getTasks("INBOX"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -111,9 +126,9 @@ public class InboxController {
     }
 
     public void deleteTask() {
-        if (tbInbox.getSelectionModel().isEmpty()) return;
+        if (tbTasks.getSelectionModel().isEmpty()) return;
         try {
-            if (!taskRepository.deleteTask(tbInbox.getSelectionModel().getSelectedItem().getId())) {
+            if (!taskRepository.deleteTask(tbTasks.getSelectionModel().getSelectedItem().getId())) {
                 alertService.error("The task to be deleted was not found");
             }
             getTasks();

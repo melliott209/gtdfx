@@ -26,14 +26,14 @@ public class CompleteController {
     private static final Logger logger = Logger.getLogger(CompleteController.class.getName());
     private final TaskRepository taskRepository;
     private final AlertService alertService;
-    @FXML TableView<Task> tbNext;
+    @FXML TableView<Task> tbTasks;
     @FXML TableColumn<Task, OffsetDateTime> colCreated;
     @FXML TableColumn<Task, OffsetDateTime> colFinished;
     @FXML TableColumn<Task, Duration> colElapsed;
     @FXML TableColumn<Task, String> colDescNext;
     @FXML Button btnUndo;
 
-    ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
+    ListProperty<Task> tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public CompleteController(AppServices appServices, TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
@@ -51,14 +51,14 @@ public class CompleteController {
         colFinished.setCellFactory(col -> new SimpleDateTableCell());
         colElapsed.setCellFactory(col -> new ElapsedTimeTableCell());
 
-        tbNext.itemsProperty().bind(next);
+        tbTasks.itemsProperty().bind(tasks);
 
         loadCompleteTasks();
     }
 
     public void loadCompleteTasks() {
         try {
-            next.setAll(taskRepository.getTasks("COMPLETE"));
+            tasks.setAll(taskRepository.getTasks("COMPLETE"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -71,7 +71,7 @@ public class CompleteController {
     public void undoTask() {
         logger.info("completing task...");
         try {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbNext.getSelectionModel().getSelectedItem().getId());
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
             task.setStatus("NEXT");
             taskRepository.updateTask(task);
             loadCompleteTasks();

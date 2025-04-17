@@ -23,8 +23,8 @@ public class ViewLoader {
             else if (param == CompleteController.class) return new CompleteController(services, taskRepository);
             else if (param == NextController.class) return new NextController(services, taskRepository);
             else if (param == GtdController.class) return new GtdController(services, taskRepository);
-            else if (param == WaitingController.class) return new WaitingController(services);
-            else if (param == SomedayController.class) return new SomedayController(services);
+            else if (param == WaitingController.class) return new WaitingController(services, taskRepository);
+            else if (param == SomedayController.class) return new SomedayController(services, taskRepository);
 //            else if (param == ProjectsController.class) return new ProjectsController(services);
 
             throw new IllegalArgumentException("Unknown controller type: " + param);

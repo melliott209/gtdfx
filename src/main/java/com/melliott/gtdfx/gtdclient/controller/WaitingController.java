@@ -1,17 +1,16 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
-import com.melliott.gtdfx.gtdclient.service.HttpService;
-import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
@@ -20,42 +19,73 @@ import java.util.logging.Logger;
 
 public class WaitingController {
     private static final Logger logger = Logger.getLogger(WaitingController.class.getName());
-    private final HttpService httpService;
+    private final TaskRepository taskRepository;
     private final AlertService alertService;
-    private final JsonService jsonService;
-    @FXML TableView<Task> tbNext;
+    @FXML TableView<Task> tbTasks;
     @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
     @FXML TableColumn<Task, String> colDescNext;
 
-    ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
+    ListProperty<Task> tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public WaitingController(AppServices appServices) {
-        this.httpService = appServices.httpService;
+    public WaitingController(AppServices appServices, TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
         this.alertService = appServices.alertService;
-        this.jsonService = appServices.jsonService;
     }
 
     public void initialize() {
         logger.info("initializing...");
+        setContextMenu();
         colSinceNext.setCellFactory(col -> new TimeAgoTableCell());
         colSinceNext.setCellValueFactory(col -> col.getValue().createdProperty());
         colDescNext.setCellValueFactory(col -> col.getValue().descriptionProperty());
-        tbNext.itemsProperty().bind(next);
+        tbTasks.itemsProperty().bind(tasks);
 
-        loadNextTasks();
+        getTasks();
     }
 
-    public void loadNextTasks() {
+    private void setContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        Menu moveTo = new Menu("Move to...");
+        MenuItem toWaiting = new MenuItem("Next");
+        toWaiting.setOnAction(event -> {
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("NEXT");
+            updateTask(task);
+        });
+        MenuItem toSomeday = new MenuItem("Someday");
+        toSomeday.setOnAction(event -> {
+            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("SOMEDAY");
+            updateTask(task);
+        });
+        moveTo.getItems().addAll(toWaiting, toSomeday);
+        contextMenu.getItems().add(moveTo);
+        tbTasks.setRowFactory(tv -> {
+            TableRow<Task> row = new TableRow<>();
+            row.setContextMenu(contextMenu);
+            return row;
+        });
+    }
+
+    public void getTasks() {
         try {
-            var response = httpService.get("http://localhost:8080/tasks?status=WAITING");
-            if (response.statusCode() == 200) {
-                next.setAll(jsonService.parseTaskList(response.body()));
-            }
+            tasks.setAll(taskRepository.getTasks("WAITING"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
             alertService.error("Error while loading tasks: " + e.getMessage());
         } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void updateTask(TaskUpdateDTO task) {
+        try {
+            if (!taskRepository.updateTask(task)) alertService.error("The task to be updated was not found");
+            getTasks();
+        } catch (IOException e) {
+            alertService.error("Error while updating task: " + e.getMessage());
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
