@@ -1,10 +1,10 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
-import com.melliott.gtdfx.gtdclient.service.HttpService;
-import com.melliott.gtdfx.gtdclient.service.JsonService;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
 import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
 import javafx.beans.property.ListProperty;
@@ -24,9 +24,8 @@ import java.util.logging.Logger;
 
 public class CompleteController {
     private static final Logger logger = Logger.getLogger(CompleteController.class.getName());
-    private final HttpService httpService;
+    private final TaskRepository taskRepository;
     private final AlertService alertService;
-    private final JsonService jsonService;
     @FXML TableView<Task> tbNext;
     @FXML TableColumn<Task, OffsetDateTime> colCreated;
     @FXML TableColumn<Task, OffsetDateTime> colFinished;
@@ -36,10 +35,9 @@ public class CompleteController {
 
     ListProperty<Task> next = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public CompleteController(AppServices appServices) {
-        this.httpService = appServices.httpService;
+    public CompleteController(AppServices appServices, TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
         this.alertService = appServices.alertService;
-        this.jsonService = appServices.jsonService;
     }
 
     public void initialize() {
@@ -60,10 +58,7 @@ public class CompleteController {
 
     public void loadCompleteTasks() {
         try {
-            var response = httpService.get("http://localhost:8080/tasks?status=COMPLETE");
-            if (response.statusCode() == 200) {
-                next.setAll(jsonService.parseTaskList(response.body()));
-            }
+            next.setAll(taskRepository.getTasks("COMPLETE"));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -76,8 +71,9 @@ public class CompleteController {
     public void undoTask() {
         logger.info("completing task...");
         try {
-            httpService.patch("http://localhost:8080/tasks/" + tbNext.getSelectionModel().getSelectedItem().getId(),
-                    "{\"status\":\"NEXT\",\"dateCompleted\":null}");
+            TaskUpdateDTO task = new TaskUpdateDTO(tbNext.getSelectionModel().getSelectedItem().getId());
+            task.setStatus("NEXT");
+            taskRepository.updateTask(task);
             loadCompleteTasks();
         } catch (IOException ioe) {
             alertService.error("Error while completing task: " + ioe.getMessage());
