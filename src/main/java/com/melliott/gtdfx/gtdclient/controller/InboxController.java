@@ -57,7 +57,11 @@ public class InboxController {
         btnDelete.disableProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNull());
         tbTasks.itemsProperty().bind(tasks);
 
+        long startTime = System.currentTimeMillis();
         getTasks();
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.size(), elapsedTime));
     }
 
     private void setContextMenu() {
@@ -91,12 +95,8 @@ public class InboxController {
     }
 
     public void getTasks() {
-        long startTime = System.currentTimeMillis();
         try {
             tasks.setAll(taskRepository.getTasks("INBOX"));
-            long endTime = System.currentTimeMillis();
-            long elapsedTime = endTime - startTime;
-            statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.size(), elapsedTime));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {
@@ -111,7 +111,7 @@ public class InboxController {
         NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), 0);
         try {
             if (taskRepository.addTask(task)) {
-                alertService.info("Task added successfully");
+                statusService.updateStatus("Task added successfully");
                 tfNewTask.setText("");
                 getTasks();
             } else alertService.error("Error while adding task");

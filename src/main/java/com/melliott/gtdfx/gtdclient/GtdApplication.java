@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 @Slf4j
 public class GtdApplication extends Application {
@@ -23,7 +24,8 @@ public class GtdApplication extends Application {
         this.services = new AppServices();
 
         if (services.config.remote()) {
-            this.taskRepository = new RemoteTaskRepository(services.httpService, services.jsonService, "http://localhost:8080");
+            String baseUrl = MessageFormat.format("http://{0}:{1}", services.config.serverIP(), services.config.serverPort());
+            this.taskRepository = new RemoteTaskRepository(services.httpService, services.jsonService, baseUrl);
         } else {
             this.taskRepository = new LocalTaskRepository();
         }

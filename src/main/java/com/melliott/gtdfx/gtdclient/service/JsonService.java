@@ -57,7 +57,7 @@ public class JsonService {
         JSONObject userConfig = new JSONObject(fileContents);
         boolean remote = (userConfig.has("remote") ? userConfig.getBoolean("remote") : defaults.remote());
         String serverIP = (userConfig.has("serverIP") ? userConfig.getString("serverIP") : defaults.serverIP());
-        int serverPort = (userConfig.has("serverPort") ? userConfig.getInt("serverPort") : defaults.serverPort());
+        String serverPort = (userConfig.has("serverPort") ? userConfig.getString("serverPort") : defaults.serverPort());
         return new Config(remote, serverIP, serverPort);
     }
 }
