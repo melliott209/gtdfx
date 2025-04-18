@@ -4,6 +4,8 @@ module com.melliott.gtdfx.gtdclient {
     requires java.net.http;
     requires org.json;
     requires java.sql;
+    requires org.slf4j;
+    requires static lombok;
 
 
     opens com.melliott.gtdfx.gtdclient;

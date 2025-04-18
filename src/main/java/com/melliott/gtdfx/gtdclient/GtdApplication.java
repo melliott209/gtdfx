@@ -1,7 +1,7 @@
 package com.melliott.gtdfx.gtdclient;
 
 import com.melliott.gtdfx.gtdclient.controller.GtdController;
-import com.melliott.gtdfx.gtdclient.model.RemoteTaskRepository;
+import com.melliott.gtdfx.gtdclient.model.LocalTaskRepository;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import javafx.application.Application;
@@ -18,7 +18,8 @@ public class GtdApplication extends Application {
     @Override
     public void init() {
         this.services = new AppServices();
-        this.taskRepository = new RemoteTaskRepository(services.httpService, services.jsonService, "http://localhost:8080");
+//        this.taskRepository = new RemoteTaskRepository(services.httpService, services.jsonService, "http://localhost:8080");
+        this.taskRepository = new LocalTaskRepository();
     }
 
     @Override
