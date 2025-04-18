@@ -36,6 +36,9 @@ jobs:
         --type app-image `
         --app-version 0.1.0
 
+    - name: Copy config example into app folder
+      run: Copy-Item -Path ./config.example.json -Destination ./gtdFX
+
     - name: Zip app-image
       run: Compress-Archive -Path ./gtdFX -DestinationPath gtdFX.zip
 
