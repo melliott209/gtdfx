@@ -13,12 +13,12 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
+@Slf4j
 public class GtdController {
-    private final Logger logger = Logger.getLogger(GtdController.class.getName());
     private final AlertService alertService;
     private final StatusService statusService;
     private final ViewLoader viewLoader;
@@ -45,24 +45,29 @@ public class GtdController {
         this.statusService = services.statusService;
         this.viewLoader = new ViewLoader(services, taskRepository);
         this.connectMode = services.config.remote() ? services.config.serverIP() : "Local";
-        logger.info("Created GTD Controller");
+        log.info("Created GTD Controller");
     }
 
     public void initialize() {
-        logger.info("initializing...");
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) return;
             if (newValue == tabInbox) {
+                log.info("Loading Inbox");
                 loadTab(inboxContainer, Constants.INBOX_SCREEN);
             } else if (newValue == tabNext) {
+                log.info("Loading Next");
                 loadTab(nextContainer, Constants.NEXT_SCREEN);
             } else if (newValue == tabWaiting) {
+                log.info("Loading Waiting");
                 loadTab(waitingContainer, Constants.WAITING_SCREEN);
             } else if (newValue == tabProjects) {
+                log.info("Loading Projects");
                 loadTab(projectsContainer, Constants.PROJECTS_SCREEN);
             } else if (newValue == tabSomeday) {
+                log.info("Loading Someday");
                 loadTab(somedayContainer, Constants.SOMEDAY_SCREEN);
             } else if (newValue == tabComplete) {
+                log.info("Loading Complete");
                 loadTab(completeContainer, Constants.COMPLETE_SCREEN);
             }
         });

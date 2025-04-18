@@ -1,32 +1,16 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
-import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
-import com.melliott.gtdfx.gtdclient.model.Task;
-import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
-import com.melliott.gtdfx.gtdclient.service.AlertService;
+import com.melliott.gtdfx.gtdclient.model.*;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
-import com.melliott.gtdfx.gtdclient.service.StatusService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
-import java.net.http.HttpTimeoutException;
-import java.text.MessageFormat;
 import java.time.OffsetDateTime;
-import java.util.logging.Logger;
 
-public class InboxController {
-    private final Logger logger = Logger.getLogger(InboxController.class.getName());
-    private final ListProperty<Task> tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final AlertService alertService;
-    private final StatusService statusService;
-    private final TaskRepository taskRepository;
+public class InboxController extends AbstractTaskController {
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
     @FXML TableView<Task> tbTasks;
@@ -35,36 +19,37 @@ public class InboxController {
     @FXML Button btnDelete;
 
     public InboxController(AppServices appServices, TaskRepository taskRepository) {
-        this.alertService = appServices.alertService;
-        this.statusService = appServices.statusService;
-        this.taskRepository = taskRepository;
+        super(taskRepository, appServices.alertService, appServices.statusService);
     }
 
+    @Override
     public void initialize() {
-        logger.info("Initializing InboxController...");
-        setContextMenu();
-
-        colSince.setCellValueFactory(col -> col.getValue().createdProperty());
-        colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
-        colSince.setCellFactory(col -> new TimeAgoTableCell());
-
         tfNewTask.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 addTask();
             }
         });
         btnAdd.disableProperty().bind(tfNewTask.textProperty().isEmpty());
+        btnAdd.setOnAction(event -> addTask());
         btnDelete.disableProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNull());
+        btnDelete.setOnAction(event -> deleteTask(tbTasks.getSelectionModel().getSelectedItem().getId()));
         tbTasks.itemsProperty().bind(tasks);
-
-        long startTime = System.currentTimeMillis();
-        getTasks();
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
-        statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.size(), elapsedTime));
+        super.initialize();
     }
 
-    private void setContextMenu() {
+    @Override
+    protected void setCellFactories() {
+        colSince.setCellFactory(col -> new TimeAgoTableCell());
+    }
+
+    @Override
+    protected void setCellValueFactories() {
+        colSince.setCellValueFactory(col -> col.getValue().createdProperty());
+        colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
+    }
+
+    @Override
+    protected void setContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         Menu moveTo = new Menu("Move to...");
         MenuItem toNext = new MenuItem("Next");
@@ -94,24 +79,12 @@ public class InboxController {
         });
     }
 
-    public void getTasks() {
-        try {
-            tasks.setAll(taskRepository.getTasks("INBOX"));
-        } catch (HttpTimeoutException te) {
-            alertService.error("The request timed out");
-        } catch (IOException e) {
-            alertService.error("Error while loading tasks: " + e.getMessage());
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public void addTask() {
+    private void addTask() {
         if (tfNewTask.getText() == null || tfNewTask.getText().isBlank()) return;
         NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), 0);
         try {
             if (taskRepository.addTask(task)) {
-                statusService.updateStatus("Task added successfully");
+                statusService.updateStatus("Task added.");
                 tfNewTask.setText("");
                 getTasks();
             } else alertService.error("Error while adding task");
@@ -122,28 +95,8 @@ public class InboxController {
         }
     }
 
-    private void updateTask(TaskUpdateDTO task) {
-        try {
-            if (!taskRepository.updateTask(task)) alertService.error("The task to be updated was not found");
-            getTasks();
-        } catch (IOException e) {
-            alertService.error("Error while updating task: " + e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public void deleteTask() {
-        if (tbTasks.getSelectionModel().isEmpty()) return;
-        try {
-            if (!taskRepository.deleteTask(tbTasks.getSelectionModel().getSelectedItem().getId())) {
-                alertService.error("The task to be deleted was not found");
-            }
-            getTasks();
-        } catch (IOException ioe) {
-            alertService.error("Error while deleting task: " + ioe.getMessage());
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+    @Override
+    public Status getStatus() {
+        return Status.INBOX;
     }
 }
