@@ -1,6 +1,10 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
-import com.melliott.gtdfx.gtdclient.model.*;
+import com.melliott.gtdfx.gtdclient.model.Status;
+import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.fxml.FXML;
@@ -81,7 +85,7 @@ public class InboxController extends AbstractTaskController {
 
     private void addTask() {
         if (tfNewTask.getText() == null || tfNewTask.getText().isBlank()) return;
-        NewTaskDTO task = new NewTaskDTO(tfNewTask.getText(), 0);
+        TaskCreateDTO task = new TaskCreateDTO(tfNewTask.getText(), 0);
         try {
             if (taskRepository.addTask(task)) {
                 statusService.updateStatus("Task added.");

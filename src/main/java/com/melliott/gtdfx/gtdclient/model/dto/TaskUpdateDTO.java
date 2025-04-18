@@ -1,4 +1,4 @@
-package com.melliott.gtdfx.gtdclient.model;
+package com.melliott.gtdfx.gtdclient.model.dto;
 
 import java.time.OffsetDateTime;
 

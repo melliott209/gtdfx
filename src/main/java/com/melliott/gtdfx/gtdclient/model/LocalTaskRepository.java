@@ -1,5 +1,7 @@
 package com.melliott.gtdfx.gtdclient.model;
 
+import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
@@ -57,7 +59,7 @@ public class LocalTaskRepository implements TaskRepository {
     }
 
     @Override
-    public boolean addTask(NewTaskDTO task) {
+    public boolean addTask(TaskCreateDTO task) {
         String query = """
                 INSERT INTO tasks (description, dateCreated, status)
                 VALUES(?, ?, ?);""";

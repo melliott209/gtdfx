@@ -1,5 +1,7 @@
 package com.melliott.gtdfx.gtdclient.model;
 
+import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.HttpService;
 import com.melliott.gtdfx.gtdclient.service.JsonService;
 
@@ -27,7 +29,7 @@ public class RemoteTaskRepository implements TaskRepository {
     }
 
     @Override
-    public boolean addTask(NewTaskDTO task) throws IOException, InterruptedException {
+    public boolean addTask(TaskCreateDTO task) throws IOException, InterruptedException {
         var response = httpService.post(baseUrl + "/tasks", jsonService.createNewTask(task));
         return response.statusCode() == 201;
     }

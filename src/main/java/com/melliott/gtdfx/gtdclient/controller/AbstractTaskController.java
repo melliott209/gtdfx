@@ -2,7 +2,7 @@ package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.StatusService;
 import javafx.beans.property.ListProperty;

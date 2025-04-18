@@ -1,9 +1,9 @@
 package com.melliott.gtdfx.gtdclient.service;
 
 import com.melliott.gtdfx.gtdclient.Config;
-import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
-import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.util.TimeUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,7 +34,7 @@ public class JsonService {
         return taskList;
     }
 
-    public String createNewTask(NewTaskDTO task) {
+    public String createNewTask(TaskCreateDTO task) {
         JSONObject taskObj = new JSONObject();
         taskObj.put("description", task.getDescription());
         taskObj.put("dateRecorded", OffsetDateTime.now());

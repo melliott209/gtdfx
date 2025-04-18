@@ -18,4 +18,6 @@ module com.melliott.gtdfx.gtdclient {
     opens com.melliott.gtdfx.gtdclient.controller;
     exports com.melliott.gtdfx.gtdclient.util;
     opens com.melliott.gtdfx.gtdclient.util;
+    exports com.melliott.gtdfx.gtdclient.model.dto;
+    opens com.melliott.gtdfx.gtdclient.model.dto;
 }

@@ -3,7 +3,7 @@ package com.melliott.gtdfx.gtdclient.controller;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
 import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
