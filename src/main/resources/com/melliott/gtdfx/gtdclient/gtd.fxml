@@ -17,15 +17,21 @@
             <MenuItem mnemonicParsing="false" text="About"/>
         </Menu>
     </MenuBar>
-    <HBox alignment="CENTER" layoutX="74.0" layoutY="358.0" prefHeight="60.0" prefWidth="200.0" spacing="16.0"
-          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-          AnchorPane.topAnchor="360.0">
+    <BorderPane prefHeight="25.0" prefWidth="200.0"
+                style="-fx-border-style: solid line-join bevel; -fx-border-color: lightgray darkgray darkgray lightgray;"
+                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <left>
+            <Label text="Connected to: Local" BorderPane.alignment="CENTER" fx:id="lbLeft"/>
+        </left>
+        <right>
+            <Label text="Tasks loaded" BorderPane.alignment="CENTER" fx:id="lbRight"/>
+        </right>
         <padding>
-            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+            <Insets left="8.0" right="8.0"/>
         </padding>
-    </HBox>
+    </BorderPane>
     <TabPane fx:id="tabPane" layoutY="25.0" prefHeight="375.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE"
-             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+             AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
              AnchorPane.topAnchor="25.0">
         <Tab fx:id="tabInbox" text="Inbox">
             <AnchorPane fx:id="inboxContainer"/>

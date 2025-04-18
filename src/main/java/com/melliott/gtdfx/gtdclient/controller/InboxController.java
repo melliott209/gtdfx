@@ -6,6 +6,7 @@ import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.service.StatusService;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -16,6 +17,7 @@ import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.net.http.HttpTimeoutException;
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ public class InboxController {
     private final Logger logger = Logger.getLogger(InboxController.class.getName());
     private final ListProperty<Task> tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final AlertService alertService;
+    private final StatusService statusService;
     private final TaskRepository taskRepository;
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
@@ -33,6 +36,7 @@ public class InboxController {
 
     public InboxController(AppServices appServices, TaskRepository taskRepository) {
         this.alertService = appServices.alertService;
+        this.statusService = appServices.statusService;
         this.taskRepository = taskRepository;
     }
 
@@ -87,8 +91,12 @@ public class InboxController {
     }
 
     public void getTasks() {
+        long startTime = System.currentTimeMillis();
         try {
             tasks.setAll(taskRepository.getTasks("INBOX"));
+            long endTime = System.currentTimeMillis();
+            long elapsedTime = endTime - startTime;
+            statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.size(), elapsedTime));
         } catch (HttpTimeoutException te) {
             alertService.error("The request timed out");
         } catch (IOException e) {

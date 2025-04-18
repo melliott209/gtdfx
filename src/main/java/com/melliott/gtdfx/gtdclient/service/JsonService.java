@@ -1,5 +1,6 @@
 package com.melliott.gtdfx.gtdclient.service;
 
+import com.melliott.gtdfx.gtdclient.Config;
 import com.melliott.gtdfx.gtdclient.model.NewTaskDTO;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskUpdateDTO;
@@ -49,5 +50,14 @@ public class JsonService {
         if (task.getDateCompleted() != null) taskObj.put("dateCompleted", task.getDateCompleted());
         if (task.getStatus() != null) taskObj.put("status", task.getStatus());
         return taskObj.toString();
+    }
+
+    public Config parseConfig(String fileContents) {
+        Config defaults = Config.DEFAULT;
+        JSONObject userConfig = new JSONObject(fileContents);
+        boolean remote = (userConfig.has("remote") ? userConfig.getBoolean("remote") : defaults.remote());
+        String serverIP = (userConfig.has("serverIP") ? userConfig.getString("serverIP") : defaults.serverIP());
+        int serverPort = (userConfig.has("serverPort") ? userConfig.getInt("serverPort") : defaults.serverPort());
+        return new Config(remote, serverIP, serverPort);
     }
 }
