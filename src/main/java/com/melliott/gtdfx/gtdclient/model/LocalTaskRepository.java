@@ -21,7 +21,7 @@ public class LocalTaskRepository implements TaskRepository {
         try {
             this.connection = DriverManager.getConnection("jdbc:sqlite:tasks.db");
             try (Statement statement = this.connection.createStatement()) {
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS tasks (id integer, description string, dateCreated datetime, dateDue datetime, dateCompleted datetime, status string)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS tasks (id integer primary key, description string, dateCreated datetime, dateDue datetime, dateCompleted datetime, status string)");
             }
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
@@ -100,6 +100,7 @@ public class LocalTaskRepository implements TaskRepository {
             valuesList.add(task.getStatus());
         }
         String query = MessageFormat.format("UPDATE tasks SET {0} WHERE id = ?", String.join(", ", columns));
+        log.info("Executing query: {} with params {} and taskId {}", query, valuesList, task.getId());
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (int i = 0; i < valuesList.size(); i++) {
                 statement.setObject(i + 1, valuesList.get(i));
