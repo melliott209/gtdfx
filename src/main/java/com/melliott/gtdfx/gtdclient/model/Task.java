@@ -11,6 +11,7 @@ public class Task {
     private ObjectProperty<OffsetDateTime> completed;
     private StringProperty description;
     private StringProperty status;
+    private StringProperty notes;
     private IntegerProperty userId;
 
     public Task() {
@@ -20,6 +21,7 @@ public class Task {
         this.completed = new SimpleObjectProperty<>();
         this.description = new SimpleStringProperty();
         this.status = new SimpleStringProperty();
+        this.notes = new SimpleStringProperty();
         this.userId = new SimpleIntegerProperty();
     }
 
@@ -30,6 +32,7 @@ public class Task {
         this.completed = new SimpleObjectProperty<>(completed);
         this.description = new SimpleStringProperty(description);
         this.status = new SimpleStringProperty(status);
+        this.notes = new SimpleStringProperty();
         this.userId = new SimpleIntegerProperty(userId);
     }
 
@@ -115,5 +118,17 @@ public class Task {
 
     public void setUserId(int userId) {
         this.userId.set(userId);
+    }
+
+    public String getNotes() {
+        return notes.get();
+    }
+
+    public StringProperty notesProperty() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes.set(notes);
     }
 }

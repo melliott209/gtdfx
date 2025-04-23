@@ -7,11 +7,17 @@ import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.OffsetDateTime;
 
+@Slf4j
 public class WaitingController extends AbstractTaskController {
+    @FXML TextArea taNotes;
+    @FXML VBox notesBox;
     @FXML TableView<Task> tbTasks;
     @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
     @FXML TableColumn<Task, String> colDescNext;
@@ -23,6 +29,30 @@ public class WaitingController extends AbstractTaskController {
     @Override
     public void initialize() {
         tbTasks.itemsProperty().bind(tasks);
+        notesBox.managedProperty().bind(notesBox.visibleProperty());
+        notesBox.visibleProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNotNull());
+        tbTasks.setOnMouseClicked(event -> {
+            Node selectedNode = event.getPickResult().getIntersectedNode();
+            while (selectedNode != null && !(selectedNode instanceof TableCell) && !(selectedNode instanceof TableView)) {
+                selectedNode = selectedNode.getParent();
+            }
+            if (selectedNode instanceof TableView || selectedNode != null && ((TableCell<?, ?>) selectedNode).getTableRow().isEmpty()) {
+                tbTasks.getSelectionModel().clearSelection();
+            }
+        });
+        tbTasks.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                Task selectedTask = tbTasks.getSelectionModel().getSelectedItem();
+                taNotes.setText(selectedTask.getNotes());
+            }
+        });
+        taNotes.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (Boolean.FALSE.equals(newValue) && tbTasks.getSelectionModel().getSelectedItem() != null) {
+                log.info("Saving notes...");
+                tbTasks.getSelectionModel().getSelectedItem().setNotes(taNotes.getText());
+                statusService.updateStatus("Notes updated.");
+            }
+        });
         super.initialize();
     }
 

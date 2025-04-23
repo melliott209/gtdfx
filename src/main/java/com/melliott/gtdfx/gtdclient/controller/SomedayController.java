@@ -48,11 +48,7 @@ public class SomedayController extends AbstractTaskController {
             updateTask(task);
         });
         MenuItem toWaiting = new MenuItem("Waiting");
-        toWaiting.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("WAITING");
-            updateTask(task);
-        });
+        toWaiting.setOnAction(event -> moveToWaiting(tbTasks.getSelectionModel().getSelectedItem().getId()));
         moveTo.getItems().addAll(toNext, toWaiting);
         contextMenu.getItems().add(moveTo);
         tbTasks.setRowFactory(tv -> {
