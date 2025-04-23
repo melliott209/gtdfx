@@ -80,4 +80,11 @@ public abstract class AbstractTaskController implements StatusSpecific {
     protected abstract void setCellValueFactories();
 
     protected abstract void setCellFactories();
+
+    protected void moveToWaiting(int taskId) {
+        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
+        task.setStatus("WAITING");
+        task.setNotes(alertService.notesDialog());
+        updateTask(task);
+    }
 }

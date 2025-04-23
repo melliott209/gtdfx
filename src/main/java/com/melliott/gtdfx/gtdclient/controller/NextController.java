@@ -43,11 +43,7 @@ public class NextController extends AbstractTaskController {
         ContextMenu contextMenu = new ContextMenu();
         Menu moveTo = new Menu("Move to...");
         MenuItem toWaiting = new MenuItem("Waiting");
-        toWaiting.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("WAITING");
-            updateTask(task);
-        });
+        toWaiting.setOnAction(event -> moveToWaiting(tbTasks.getSelectionModel().getSelectedItem().getId()));
         MenuItem toSomeday = new MenuItem("Someday");
         toSomeday.setOnAction(event -> {
             TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
