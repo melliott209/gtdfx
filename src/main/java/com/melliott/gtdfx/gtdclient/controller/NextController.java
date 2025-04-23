@@ -6,6 +6,7 @@ import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -26,6 +27,7 @@ public class NextController extends AbstractTaskController {
     @Override
     public void initialize() {
         tbTasks.itemsProperty().bind(tasks);
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         super.initialize();
     }
 

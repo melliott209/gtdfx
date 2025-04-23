@@ -6,9 +6,8 @@ import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -34,15 +33,7 @@ public class WaitingController extends AbstractTaskController {
         tbTasks.itemsProperty().bind(tasks);
         notesBox.managedProperty().bind(notesBox.visibleProperty());
         notesBox.visibleProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNotNull());
-        tbTasks.setOnMouseClicked(event -> {
-            Node selectedNode = event.getPickResult().getIntersectedNode();
-            while (selectedNode != null && !(selectedNode instanceof TableCell) && !(selectedNode instanceof TableView)) {
-                selectedNode = selectedNode.getParent();
-            }
-            if (selectedNode instanceof TableView || selectedNode != null && ((TableCell<?, ?>) selectedNode).getTableRow().isEmpty()) {
-                tbTasks.getSelectionModel().clearSelection();
-            }
-        });
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         tbTasks.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 Task selectedTask = tbTasks.getSelectionModel().getSelectedItem();

@@ -8,6 +8,7 @@ import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
 import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,6 +34,7 @@ public class CompleteController extends AbstractTaskController {
     @Override
     public void initialize() {
         tbTasks.itemsProperty().bind(tasks);
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         super.initialize();
     }
 
