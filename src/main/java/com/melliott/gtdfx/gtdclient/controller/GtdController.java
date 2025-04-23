@@ -6,6 +6,8 @@ import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.service.StatusService;
 import com.melliott.gtdfx.gtdclient.service.ViewLoader;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -13,6 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -75,6 +78,11 @@ public class GtdController {
 
         lbLeft.setText("Connected to: " + connectMode);
         lbRight.textProperty().bind(statusService.statusProperty());
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), lbRight);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setInterpolator(Interpolator.EASE_IN);
+        lbRight.textProperty().addListener((obs, old, newText) -> fadeOut.playFromStart());
     }
 
     private void loadTab(Pane root, String fxmlPath) {

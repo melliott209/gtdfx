@@ -11,6 +11,7 @@ public class StatusService {
     }
 
     public void updateStatus(String status) {
+        this.status.set("");
         this.status.set(status);
     }
 }

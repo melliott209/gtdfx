@@ -5,6 +5,7 @@ import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.StatusService;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -30,7 +31,7 @@ public abstract class AbstractTaskController implements StatusSpecific {
         setCellValueFactories();
         setCellFactories();
         long time = runTimed(this::getTasks);
-        statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.get().size(), time));
+        Platform.runLater(() -> statusService.updateStatus(MessageFormat.format("Loaded {0} task(s) in {1}ms", tasks.get().size(), time)));
     }
 
     protected void getTasks() {
