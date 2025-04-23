@@ -5,6 +5,7 @@ import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
 import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,7 +38,14 @@ public class CompleteController extends AbstractTaskController {
 
     @Override
     protected void setContextMenu() {
-        // intentionally empty; fill me!
+        tbTasks.setContextMenu(new ContextMenuBuilder()
+                .item("Uncomplete", () -> moveToNext(getSelectedTaskId()))
+                .item("Delete", () -> deleteTask(getSelectedTaskId()))
+                .build());
+    }
+
+    private int getSelectedTaskId() {
+        return tbTasks.getSelectionModel().getSelectedItem().getId();
     }
 
     @Override
@@ -57,7 +65,7 @@ public class CompleteController extends AbstractTaskController {
 
     public void undoTask() {
         try {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
+            TaskUpdateDTO task = new TaskUpdateDTO(getSelectedTaskId());
             task.setStatus("NEXT");
             taskRepository.updateTask(task);
             getTasks();

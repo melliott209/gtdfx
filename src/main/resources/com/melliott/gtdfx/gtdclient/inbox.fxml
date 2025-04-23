@@ -26,6 +26,5 @@
         </padding>
         <TextField fx:id="tfNewTask" promptText="What's on your mind?" HBox.hgrow="ALWAYS"/>
         <Button mnemonicParsing="false" text="ADD" fx:id="btnAdd"/>
-        <Button layoutX="62.0" layoutY="10.0" mnemonicParsing="false" text="DELETE" fx:id="btnDelete"/>
     </HBox>
 </AnchorPane>

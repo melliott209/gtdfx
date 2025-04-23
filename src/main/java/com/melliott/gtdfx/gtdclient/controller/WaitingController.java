@@ -3,12 +3,15 @@ package com.melliott.gtdfx.gtdclient.controller;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,27 +72,18 @@ public class WaitingController extends AbstractTaskController {
 
     @Override
     protected void setContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        Menu moveTo = new Menu("Move to...");
-        MenuItem toWaiting = new MenuItem("Next");
-        toWaiting.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("NEXT");
-            updateTask(task);
-        });
-        MenuItem toSomeday = new MenuItem("Someday");
-        toSomeday.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("SOMEDAY");
-            updateTask(task);
-        });
-        moveTo.getItems().addAll(toWaiting, toSomeday);
-        contextMenu.getItems().add(moveTo);
-        tbTasks.setRowFactory(tv -> {
-            TableRow<Task> row = new TableRow<>();
-            row.setContextMenu(contextMenu);
-            return row;
-        });
+        tbTasks.setContextMenu(new ContextMenuBuilder()
+                .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
+                        .item("Next", () -> moveToNext(getSelectedTaskId()))
+                        .item("Someday", () -> moveToSomeday(getSelectedTaskId()))
+                        .build())
+                .item("Complete", () -> completeTask(getSelectedTaskId()))
+                .item("Delete", () -> deleteTask(getSelectedTaskId()))
+                .build());
+    }
+
+    private int getSelectedTaskId() {
+        return tbTasks.getSelectionModel().getSelectedItem().getId();
     }
 
     @Override
