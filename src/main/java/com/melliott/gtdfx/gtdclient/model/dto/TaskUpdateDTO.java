@@ -9,6 +9,7 @@ public class TaskUpdateDTO {
     private OffsetDateTime dateDue;
     private OffsetDateTime dateCompleted;
     private String status;
+    private String notes;
 
     public TaskUpdateDTO(int id) {
         this.taskId = id;
@@ -56,5 +57,13 @@ public class TaskUpdateDTO {
 
     public int getId() {
         return this.taskId;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }
