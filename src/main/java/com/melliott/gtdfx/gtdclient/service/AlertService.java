@@ -9,6 +9,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import java.util.Optional;
+
 public class AlertService {
     public void alert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
@@ -26,20 +28,22 @@ public class AlertService {
         alert(Alert.AlertType.ERROR, null, message);
     }
 
-    public String notesDialog(Task task) {
+    public Optional<String> notesDialog(Task task) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Notes");
         alert.setHeaderText(null);
         TextArea textArea = getTextArea(task, alert);
         alert.getDialogPane().setContent(textArea);
-        alert.getButtonTypes().setAll(ButtonType.OK);
+        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
         Platform.runLater(textArea::requestFocus); // Start editing once the dialog opens
-        alert.showAndWait();
-        return textArea.getText();
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) return Optional.of(textArea.getText());
+        else return Optional.empty();
     }
 
     private static TextArea getTextArea(Task task, Alert alert) {
         TextArea textArea = new TextArea(task.getNotes() != null ? task.getNotes() : "");
+        textArea.positionCaret(textArea.getLength());
         textArea.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 if (event.isShiftDown()) { // Shift+Enter for new line

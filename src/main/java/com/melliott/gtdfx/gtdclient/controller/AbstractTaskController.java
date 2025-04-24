@@ -91,8 +91,10 @@ public abstract class AbstractTaskController implements StatusSpecific {
     protected void moveToWaiting(Task task) {
         TaskUpdateDTO dto = new TaskUpdateDTO(task.getId());
         dto.setStatus("WAITING");
-        dto.setNotes(alertService.notesDialog(task));
-        updateTask(dto);
+        alertService.notesDialog(task).ifPresent(notes -> { // Only update task and notes if user clicks OK
+            dto.setNotes(notes);
+            updateTask(dto);
+        });
     }
 
     protected void moveToSomeday(int taskId) {
