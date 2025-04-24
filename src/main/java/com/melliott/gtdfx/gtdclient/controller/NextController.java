@@ -3,11 +3,14 @@ package com.melliott.gtdfx.gtdclient.controller;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
 import java.time.OffsetDateTime;
 
@@ -24,6 +27,7 @@ public class NextController extends AbstractTaskController {
     @Override
     public void initialize() {
         tbTasks.itemsProperty().bind(tasks);
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         super.initialize();
     }
 
@@ -40,34 +44,18 @@ public class NextController extends AbstractTaskController {
 
     @Override
     protected void setContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        Menu moveTo = new Menu("Move to...");
-        MenuItem toWaiting = new MenuItem("Waiting");
-        toWaiting.setOnAction(event -> moveToWaiting(tbTasks.getSelectionModel().getSelectedItem().getId()));
-        MenuItem toSomeday = new MenuItem("Someday");
-        toSomeday.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("SOMEDAY");
-            updateTask(task);
-        });
-        moveTo.getItems().addAll(toWaiting, toSomeday);
-
-        MenuItem complete = new MenuItem("Complete Task");
-        complete.setOnAction(event -> completeTask());
-
-        contextMenu.getItems().addAll(moveTo, complete);
-        tbTasks.setRowFactory(tv -> {
-            TableRow<Task> row = new TableRow<>();
-            row.setContextMenu(contextMenu);
-            return row;
-        });
+        tbTasks.setContextMenu(new ContextMenuBuilder()
+                .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
+                        .item("Waiting", () -> moveToWaiting(getSelectedTask()))
+                        .item("Someday", () -> moveToSomeday(getSelectedTask().getId()))
+                        .build())
+                .item("Complete", () -> completeTask(getSelectedTask().getId()))
+                .item("Delete", () -> deleteTask(getSelectedTask().getId()))
+                .build());
     }
 
-    public void completeTask() {
-        TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-        task.setStatus("COMPLETE");
-        task.setDateCompleted(OffsetDateTime.now());
-        updateTask(task);
+    private Task getSelectedTask() {
+        return tbTasks.getSelectionModel().getSelectedItem();
     }
 
     @Override

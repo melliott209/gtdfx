@@ -3,17 +3,16 @@ package com.melliott.gtdfx.gtdclient.controller;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
-import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.ElapsedTimeTableCell;
 import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 
@@ -23,7 +22,6 @@ public class CompleteController extends AbstractTaskController {
     @FXML TableColumn<Task, OffsetDateTime> colFinished;
     @FXML TableColumn<Task, Duration> colElapsed;
     @FXML TableColumn<Task, String> colDescNext;
-    @FXML Button btnUndo;
 
     public CompleteController(AppServices appServices, TaskRepository taskRepository) {
         super(taskRepository, appServices.alertService, appServices.statusService);
@@ -32,12 +30,20 @@ public class CompleteController extends AbstractTaskController {
     @Override
     public void initialize() {
         tbTasks.itemsProperty().bind(tasks);
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         super.initialize();
     }
 
     @Override
     protected void setContextMenu() {
-        // intentionally empty; fill me!
+        tbTasks.setContextMenu(new ContextMenuBuilder()
+                .item("Uncomplete", () -> moveToNext(getSelectedTaskId()))
+                .item("Delete", () -> deleteTask(getSelectedTaskId()))
+                .build());
+    }
+
+    private int getSelectedTaskId() {
+        return tbTasks.getSelectionModel().getSelectedItem().getId();
     }
 
     @Override
@@ -53,19 +59,6 @@ public class CompleteController extends AbstractTaskController {
         colFinished.setCellValueFactory(col -> col.getValue().completedProperty());
         colElapsed.setCellValueFactory(col -> new SimpleObjectProperty<>(Duration.between(col.getValue().getCreated(), col.getValue().getCompleted())));
         colDescNext.setCellValueFactory(col -> col.getValue().descriptionProperty());
-    }
-
-    public void undoTask() {
-        try {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("NEXT");
-            taskRepository.updateTask(task);
-            getTasks();
-        } catch (IOException ioe) {
-            alertService.error("Error while completing task: " + ioe.getMessage());
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     @Override

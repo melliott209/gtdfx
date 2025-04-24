@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.OffsetDateTime;
 
 public abstract class AbstractTaskController implements StatusSpecific {
     protected TaskRepository taskRepository;
@@ -81,10 +82,31 @@ public abstract class AbstractTaskController implements StatusSpecific {
 
     protected abstract void setCellFactories();
 
-    protected void moveToWaiting(int taskId) {
+    protected void moveToNext(int taskId) {
         TaskUpdateDTO task = new TaskUpdateDTO(taskId);
-        task.setStatus("WAITING");
-        task.setNotes(alertService.notesDialog());
+        task.setStatus("NEXT");
+        updateTask(task);
+    }
+
+    protected void moveToWaiting(Task task) {
+        TaskUpdateDTO dto = new TaskUpdateDTO(task.getId());
+        dto.setStatus("WAITING");
+        alertService.notesDialog(task).ifPresent(notes -> { // Only update task and notes if user clicks OK
+            dto.setNotes(notes);
+            updateTask(dto);
+        });
+    }
+
+    protected void moveToSomeday(int taskId) {
+        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
+        task.setStatus("SOMEDAY");
+        updateTask(task);
+    }
+
+    protected void completeTask(int taskId) {
+        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
+        task.setStatus("COMPLETE");
+        task.setDateCompleted(OffsetDateTime.now());
         updateTask(task);
     }
 }

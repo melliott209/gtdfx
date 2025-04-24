@@ -4,11 +4,15 @@ import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
-import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
+import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
+import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
@@ -20,7 +24,6 @@ public class InboxController extends AbstractTaskController {
     @FXML TableView<Task> tbTasks;
     @FXML TextField tfNewTask;
     @FXML Button btnAdd;
-    @FXML Button btnDelete;
 
     public InboxController(AppServices appServices, TaskRepository taskRepository) {
         super(taskRepository, appServices.alertService, appServices.statusService);
@@ -35,9 +38,8 @@ public class InboxController extends AbstractTaskController {
         });
         btnAdd.disableProperty().bind(tfNewTask.textProperty().isEmpty());
         btnAdd.setOnAction(event -> addTask());
-        btnDelete.disableProperty().bind(tbTasks.getSelectionModel().selectedItemProperty().isNull());
-        btnDelete.setOnAction(event -> deleteTask(tbTasks.getSelectionModel().getSelectedItem().getId()));
         tbTasks.itemsProperty().bind(tasks);
+        UIUtil.clearSelectionOnEmptyRowClick(tbTasks);
         super.initialize();
     }
 
@@ -54,29 +56,18 @@ public class InboxController extends AbstractTaskController {
 
     @Override
     protected void setContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        Menu moveTo = new Menu("Move to...");
-        MenuItem toNext = new MenuItem("Next");
-        toNext.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("NEXT");
-            updateTask(task);
-        });
-        MenuItem toWaiting = new MenuItem("Waiting");
-        toWaiting.setOnAction(event -> moveToWaiting(tbTasks.getSelectionModel().getSelectedItem().getId()));
-        MenuItem toSomeday = new MenuItem("Someday");
-        toSomeday.setOnAction(event -> {
-            TaskUpdateDTO task = new TaskUpdateDTO(tbTasks.getSelectionModel().getSelectedItem().getId());
-            task.setStatus("SOMEDAY");
-            updateTask(task);
-        });
-        moveTo.getItems().addAll(toNext, toWaiting, toSomeday);
-        contextMenu.getItems().add(moveTo);
-        tbTasks.setRowFactory(tv -> {
-            TableRow<Task> row = new TableRow<>();
-            row.setContextMenu(contextMenu);
-            return row;
-        });
+        tbTasks.setContextMenu(new ContextMenuBuilder()
+                .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
+                        .item("Next", () -> moveToNext(getSelectedTask().getId()))
+                        .item("Waiting", () -> moveToWaiting(getSelectedTask()))
+                        .item("Someday", () -> moveToSomeday(getSelectedTask().getId()))
+                        .build())
+                .item("Delete", () -> deleteTask(getSelectedTask().getId()))
+                .build());
+    }
+
+    private Task getSelectedTask() {
+        return tbTasks.getSelectionModel().getSelectedItem();
     }
 
     private void addTask() {
