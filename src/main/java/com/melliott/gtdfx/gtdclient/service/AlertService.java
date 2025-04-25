@@ -1,7 +1,11 @@
 package com.melliott.gtdfx.gtdclient.service;
 
+import com.melliott.gtdfx.gtdclient.controller.UpdateDialogController;
 import com.melliott.gtdfx.gtdclient.model.Task;
+import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -9,6 +13,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 public class AlertService {
@@ -26,6 +32,38 @@ public class AlertService {
 
     public void error(String message) {
         alert(Alert.AlertType.ERROR, null, message);
+    }
+
+    public Optional<TaskUpdateDTO> updateTask(TaskUpdateDTO taskUpdateDTO) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Update Task");
+        alert.setHeaderText(null);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/melliott/gtdfx/gtdclient/update_dialog.fxml"));
+        Node root = loader.load();
+        UpdateDialogController controller = loader.getController();
+        alert.getDialogPane().setContent(root);
+        controller.tfDescription.setText(taskUpdateDTO.getDescription());
+        if (taskUpdateDTO.getDateDue() != null) {
+            controller.cbDue.setSelected(true);
+            controller.dueController.setFromOffsetDateTime(taskUpdateDTO.getDateDue());
+        }
+        if (taskUpdateDTO.getDateScheduled() != null) {
+            controller.cbScheduled.setSelected(true);
+            controller.scheduledController.setFromOffsetDateTime(taskUpdateDTO.getDateScheduled());
+        }
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            taskUpdateDTO.setDescription(controller.tfDescription.getText());
+            if (controller.cbDue.isSelected()) {
+                taskUpdateDTO.setDateDue(OffsetDateTime.parse(controller.dueController.getTimeStamp()));
+            }
+            if (controller.cbScheduled.isSelected()) {
+                taskUpdateDTO.setDateScheduled(OffsetDateTime.parse(controller.scheduledController.getTimeStamp()));
+            }
+            return Optional.of(taskUpdateDTO);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<String> notesDialog(Task task) {

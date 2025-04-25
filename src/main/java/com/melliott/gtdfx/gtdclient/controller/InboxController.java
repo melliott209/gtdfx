@@ -14,10 +14,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
 
+@Slf4j
 public class InboxController extends AbstractTaskController {
     @FXML TableColumn<Task, OffsetDateTime> colSince;
     @FXML TableColumn<Task, String> colDesc;
@@ -58,7 +60,7 @@ public class InboxController extends AbstractTaskController {
     protected void setContextMenu() {
         tbTasks.setContextMenu(new ContextMenuBuilder()
                 .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
-                        .item("Next", () -> moveToNext(getSelectedTask().getId()))
+                        .item("Next", () -> moveToNext(getSelectedTask()))
                         .item("Waiting", () -> moveToWaiting(getSelectedTask()))
                         .item("Someday", () -> moveToSomeday(getSelectedTask().getId()))
                         .build())

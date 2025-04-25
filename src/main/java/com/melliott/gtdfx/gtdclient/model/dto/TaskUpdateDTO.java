@@ -7,6 +7,7 @@ public class TaskUpdateDTO {
     private String description;
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateDue;
+    private OffsetDateTime dateScheduled;
     private OffsetDateTime dateCompleted;
     private String status;
     private String notes;
@@ -65,5 +66,13 @@ public class TaskUpdateDTO {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public OffsetDateTime getDateScheduled() {
+        return dateScheduled;
+    }
+
+    public void setDateScheduled(OffsetDateTime dateScheduled) {
+        this.dateScheduled = dateScheduled;
     }
 }

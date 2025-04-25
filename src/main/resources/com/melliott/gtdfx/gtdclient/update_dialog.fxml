@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.melliott.gtdfx.gtdclient.controller.UpdateDialogController">
+    <padding>
+        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+    </padding>
+    <Label text="Description"/>
+    <TextField fx:id="tfDescription"/>
+    <GridPane>
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints prefHeight="75.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="75.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <CheckBox mnemonicParsing="false" text="Due" fx:id="cbDue"/>
+        <fx:include fx:id="due" source="time_input.fxml" GridPane.columnIndex="1"/>
+        <CheckBox mnemonicParsing="false" text="Scheduled" GridPane.rowIndex="1" fx:id="cbScheduled"/>
+        <fx:include fx:id="scheduled" source="time_input.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    </GridPane>
+</VBox>

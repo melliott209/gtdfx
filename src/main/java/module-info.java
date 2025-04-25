@@ -6,6 +6,7 @@ module com.melliott.gtdfx.gtdclient {
     requires java.sql;
     requires org.slf4j;
     requires static lombok;
+    requires java.desktop;
 
 
     opens com.melliott.gtdfx.gtdclient;
@@ -20,4 +21,6 @@ module com.melliott.gtdfx.gtdclient {
     opens com.melliott.gtdfx.gtdclient.util;
     exports com.melliott.gtdfx.gtdclient.model.dto;
     opens com.melliott.gtdfx.gtdclient.model.dto;
+    exports com.melliott.gtdfx.gtdclient.ui;
+    opens com.melliott.gtdfx.gtdclient.ui to javafx.fxml;
 }

@@ -21,7 +21,7 @@ public class LocalTaskRepository implements TaskRepository {
         try {
             this.connection = DriverManager.getConnection("jdbc:sqlite:tasks.db");
             try (Statement statement = this.connection.createStatement()) {
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS tasks (id integer primary key, description text, dateCreated datetime, dateDue datetime, dateCompleted datetime, status text, notes text)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS tasks (id integer primary key, description text, dateCreated datetime, dateDue datetime, dateScheduled datetime, dateCompleted datetime, status text, notes text)");
             }
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
@@ -43,6 +43,9 @@ public class LocalTaskRepository implements TaskRepository {
                     if (rs.getString("dateDue") != null) {
                         task.setDue(OffsetDateTime.parse(rs.getString("dateDue")));
                     }
+                    if (rs.getString("dateScheduled") != null) {
+                        task.setScheduled(OffsetDateTime.parse(rs.getString("dateScheduled")));
+                    }
                     if (rs.getString("dateCompleted") != null) {
                         task.setCompleted(OffsetDateTime.parse(rs.getString("dateCompleted")));
                     }
@@ -62,12 +65,14 @@ public class LocalTaskRepository implements TaskRepository {
     @Override
     public boolean addTask(TaskCreateDTO task) {
         String query = """
-                INSERT INTO tasks (description, dateCreated, status)
-                VALUES(?, ?, ?);""";
+                INSERT INTO tasks (description, dateCreated, dateDue, dateScheduled, status)
+                VALUES(?, ?, ?, ?, ?);""";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, task.getDescription());
             statement.setString(2, OffsetDateTime.now().toString());
-            statement.setString(3, "INBOX");
+            statement.setString(3, task.getDueDate() != null ? task.getDueDate().toString() : null);
+            statement.setString(4, task.getScheduledDate() != null ? task.getScheduledDate().toString() : null);
+            statement.setString(5, "INBOX");
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
@@ -91,6 +96,10 @@ public class LocalTaskRepository implements TaskRepository {
         if (task.getDateDue() != null) {
             columns.add("dateDue = ?");
             valuesList.add(task.getDateDue());
+        }
+        if (task.getDateScheduled() != null) {
+            columns.add("dateScheduled = ?");
+            valuesList.add(task.getDateScheduled());
         }
         if (task.getDateCompleted() != null) {
             columns.add("dateCompleted = ?");

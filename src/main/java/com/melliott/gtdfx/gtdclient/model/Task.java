@@ -8,6 +8,7 @@ public class Task {
     private IntegerProperty id;
     private ObjectProperty<OffsetDateTime> created;
     private ObjectProperty<OffsetDateTime> due;
+    private ObjectProperty<OffsetDateTime> scheduled;
     private ObjectProperty<OffsetDateTime> completed;
     private StringProperty description;
     private StringProperty status;
@@ -18,6 +19,7 @@ public class Task {
         this.id = new SimpleIntegerProperty();
         this.created = new SimpleObjectProperty<>();
         this.due = new SimpleObjectProperty<>();
+        this.scheduled = new SimpleObjectProperty<>();
         this.completed = new SimpleObjectProperty<>();
         this.description = new SimpleStringProperty();
         this.status = new SimpleStringProperty();
@@ -25,10 +27,11 @@ public class Task {
         this.userId = new SimpleIntegerProperty();
     }
 
-    public Task(int id, OffsetDateTime created, OffsetDateTime due, OffsetDateTime completed, String description, String status, int userId) {
+    public Task(int id, OffsetDateTime created, OffsetDateTime due, OffsetDateTime scheduled, OffsetDateTime completed, String description, String status, int userId) {
         this.id = new ReadOnlyIntegerWrapper(id);
         this.created = new SimpleObjectProperty<>(created);
         this.due = new SimpleObjectProperty<>(due);
+        this.scheduled = new SimpleObjectProperty<>(scheduled);
         this.completed = new SimpleObjectProperty<>(completed);
         this.description = new SimpleStringProperty(description);
         this.status = new SimpleStringProperty(status);
@@ -130,5 +133,17 @@ public class Task {
 
     public void setNotes(String notes) {
         this.notes.set(notes);
+    }
+
+    public OffsetDateTime getScheduled() {
+        return scheduled.get();
+    }
+
+    public ObjectProperty<OffsetDateTime> scheduledProperty() {
+        return scheduled;
+    }
+
+    public void setScheduled(OffsetDateTime scheduled) {
+        this.scheduled.set(scheduled);
     }
 }

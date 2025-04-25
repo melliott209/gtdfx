@@ -8,7 +8,6 @@ import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -18,7 +17,6 @@ public class NextController extends AbstractTaskController {
     @FXML TableView<Task> tbTasks;
     @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
     @FXML TableColumn<Task, String> colDescNext;
-    @FXML Button btnComplete;
 
     public NextController(AppServices appServices, TaskRepository taskRepository) {
         super(taskRepository, appServices.alertService, appServices.statusService);

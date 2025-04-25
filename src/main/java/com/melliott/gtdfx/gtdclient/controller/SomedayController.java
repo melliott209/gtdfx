@@ -44,7 +44,7 @@ public class SomedayController extends AbstractTaskController {
     protected void setContextMenu() {
         tbTasks.setContextMenu(new ContextMenuBuilder()
                 .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
-                        .item("Next", () -> moveToNext(getSelectedTask().getId()))
+                        .item("Next", () -> moveToNext(getSelectedTask()))
                         .item("Waiting", () -> moveToWaiting(getSelectedTask()))
                         .build())
                 .item("Delete", () -> deleteTask(getSelectedTask().getId()))

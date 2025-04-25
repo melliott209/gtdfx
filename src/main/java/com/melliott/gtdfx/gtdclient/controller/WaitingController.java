@@ -65,16 +65,16 @@ public class WaitingController extends AbstractTaskController {
     protected void setContextMenu() {
         tbTasks.setContextMenu(new ContextMenuBuilder()
                 .submenu(new ContextMenuBuilder.MenuBuilder("Move to...")
-                        .item("Next", () -> moveToNext(getSelectedTaskId()))
-                        .item("Someday", () -> moveToSomeday(getSelectedTaskId()))
+                        .item("Next", () -> moveToNext(getSelectedTask()))
+                        .item("Someday", () -> moveToSomeday(getSelectedTask().getId()))
                         .build())
-                .item("Complete", () -> completeTask(getSelectedTaskId()))
-                .item("Delete", () -> deleteTask(getSelectedTaskId()))
+                .item("Complete", () -> completeTask(getSelectedTask().getId()))
+                .item("Delete", () -> deleteTask(getSelectedTask().getId()))
                 .build());
     }
 
-    private int getSelectedTaskId() {
-        return tbTasks.getSelectionModel().getSelectedItem().getId();
+    private Task getSelectedTask() {
+        return tbTasks.getSelectionModel().getSelectedItem();
     }
 
     @Override

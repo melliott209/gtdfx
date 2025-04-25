@@ -37,13 +37,13 @@ public class CompleteController extends AbstractTaskController {
     @Override
     protected void setContextMenu() {
         tbTasks.setContextMenu(new ContextMenuBuilder()
-                .item("Uncomplete", () -> moveToNext(getSelectedTaskId()))
-                .item("Delete", () -> deleteTask(getSelectedTaskId()))
+                .item("Uncomplete", () -> moveToNext(getSelectedTask()))
+                .item("Delete", () -> deleteTask(getSelectedTask().getId()))
                 .build());
     }
 
-    private int getSelectedTaskId() {
-        return tbTasks.getSelectionModel().getSelectedItem().getId();
+    private Task getSelectedTask() {
+        return tbTasks.getSelectionModel().getSelectedItem();
     }
 
     @Override

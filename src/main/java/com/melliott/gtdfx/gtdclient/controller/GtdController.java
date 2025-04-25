@@ -91,6 +91,7 @@ public class GtdController {
             root.getChildren().setAll(screen);
         } catch (IOException e) {
             alertService.error("Failed to load screen: " + e.getMessage());
+            log.error("Error: ", e);
         }
     }
 }

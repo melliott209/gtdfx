@@ -23,12 +23,14 @@ public class JsonService {
             OffsetDateTime dateCreated = dateCreatedString == null ? null : TimeUtil.getLocalTimeFromString(dateCreatedString);
             String dateDueString = taskObj.optString("dateDue", null);
             OffsetDateTime dateDue = dateDueString == null ? null : TimeUtil.getLocalTimeFromString(dateDueString);
+            String dateScheduledString = taskObj.optString("dateScheduled", null);
+            OffsetDateTime dateScheduled = dateScheduledString == null ? null : TimeUtil.getLocalTimeFromString(dateScheduledString);
             String dateCompletedString = taskObj.optString("dateCompleted", null);
             OffsetDateTime dateCompleted = dateCompletedString == null ? null : TimeUtil.getLocalTimeFromString(dateCompletedString);
             String description = taskObj.getString("description");
             String status = taskObj.getString("status");
             int userId = taskObj.getInt("userId");
-            taskList.add(new Task(id, dateCreated, dateDue, dateCompleted, description, status, userId));
+            taskList.add(new Task(id, dateCreated, dateDue, dateScheduled, dateCompleted, description, status, userId));
         });
 
         return taskList;

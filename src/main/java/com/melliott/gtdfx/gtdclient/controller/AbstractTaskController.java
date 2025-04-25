@@ -82,10 +82,17 @@ public abstract class AbstractTaskController implements StatusSpecific {
 
     protected abstract void setCellFactories();
 
-    protected void moveToNext(int taskId) {
-        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
-        task.setStatus("NEXT");
-        updateTask(task);
+    protected void moveToNext(Task task) {
+        TaskUpdateDTO update = new TaskUpdateDTO(task.getId());
+        update.setStatus("NEXT");
+        update.setDescription(task.getDescription());
+        update.setDateDue(task.getDue());
+        update.setDateScheduled(task.getScheduled());
+        try {
+            alertService.updateTask(update).ifPresent(this::updateTask);
+        } catch (IOException e) {
+            alertService.error("Error while updating task: " + e.getMessage());
+        }
     }
 
     protected void moveToWaiting(Task task) {

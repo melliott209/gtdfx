@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.melliott.gtdfx.gtdclient.ui.MeridiemTimeField?>
+<?import com.melliott.gtdfx.gtdclient.ui.MinuteTimeField?>
+<?import com.melliott.gtdfx.gtdclient.ui.TwelveHourTimeField?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<VBox alignment="CENTER" spacing="4.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.melliott.gtdfx.gtdclient.controller.TimeInputController">
+    <HBox alignment="CENTER_LEFT" spacing="2">
+        <DatePicker prefWidth="120" fx:id="date"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="2">
+        <TwelveHourTimeField fx:id="hours"/>
+        <Text>:</Text>
+        <MinuteTimeField fx:id="minutes"/>
+        <MeridiemTimeField fx:id="meridiem"/>
+    </HBox>
+</VBox>
