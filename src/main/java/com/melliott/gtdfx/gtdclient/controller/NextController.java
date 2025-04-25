@@ -5,6 +5,7 @@ import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
+import com.melliott.gtdfx.gtdclient.ui.SimpleDateTableCell;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
@@ -15,8 +16,10 @@ import java.time.OffsetDateTime;
 
 public class NextController extends AbstractTaskController {
     @FXML TableView<Task> tbTasks;
-    @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
-    @FXML TableColumn<Task, String> colDescNext;
+    @FXML TableColumn<Task, OffsetDateTime> colSince;
+    @FXML TableColumn<Task, String> colDesc;
+    @FXML TableColumn<Task, OffsetDateTime> colDue;
+    @FXML TableColumn<Task, OffsetDateTime> colScheduled;
 
     public NextController(AppServices appServices, TaskRepository taskRepository) {
         super(taskRepository, appServices.alertService, appServices.statusService);
@@ -31,13 +34,17 @@ public class NextController extends AbstractTaskController {
 
     @Override
     protected void setCellValueFactories() {
-        colSinceNext.setCellValueFactory(col -> col.getValue().createdProperty());
-        colDescNext.setCellValueFactory(col -> col.getValue().descriptionProperty());
+        colSince.setCellValueFactory(col -> col.getValue().createdProperty());
+        colDesc.setCellValueFactory(col -> col.getValue().descriptionProperty());
+        colDue.setCellValueFactory(col -> col.getValue().dueProperty());
+        colScheduled.setCellValueFactory(col -> col.getValue().scheduledProperty());
     }
 
     @Override
     protected void setCellFactories() {
-        colSinceNext.setCellFactory(col -> new TimeAgoTableCell());
+        colSince.setCellFactory(col -> new TimeAgoTableCell());
+        colDue.setCellFactory(col -> new SimpleDateTableCell());
+        colScheduled.setCellFactory(col -> new SimpleDateTableCell());
     }
 
     @Override
