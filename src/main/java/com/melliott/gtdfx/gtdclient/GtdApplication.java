@@ -1,9 +1,7 @@
 package com.melliott.gtdfx.gtdclient;
 
 import com.melliott.gtdfx.gtdclient.controller.GtdController;
-import com.melliott.gtdfx.gtdclient.model.LocalTaskRepository;
-import com.melliott.gtdfx.gtdclient.model.RemoteTaskRepository;
-import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.*;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +16,7 @@ import java.text.MessageFormat;
 public class GtdApplication extends Application {
     private AppServices services;
     private TaskRepository taskRepository;
+    private ProjectRepository projectRepository;
 
     @Override
     public void init() {
@@ -29,12 +28,14 @@ public class GtdApplication extends Application {
         } else {
             this.taskRepository = new LocalTaskRepository();
         }
+
+        this.projectRepository = new LocalProjectRepository();
     }
 
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GtdApplication.class.getResource("gtd.fxml"));
-        fxmlLoader.setControllerFactory(param -> new GtdController(services, taskRepository));
+        fxmlLoader.setControllerFactory(param -> new GtdController(services, taskRepository, projectRepository));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("gtdFX");
         stage.setScene(scene);

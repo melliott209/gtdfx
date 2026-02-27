@@ -1,6 +1,7 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
 import com.melliott.gtdfx.gtdclient.Constants;
+import com.melliott.gtdfx.gtdclient.model.ProjectRepository;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
@@ -43,10 +44,10 @@ public class GtdController {
     @FXML Label lbLeft;
     @FXML Label lbRight;
 
-    public GtdController(AppServices services, TaskRepository taskRepository) {
+    public GtdController(AppServices services, TaskRepository taskRepository, ProjectRepository projectRepository) {
         this.alertService = services.alertService;
         this.statusService = services.statusService;
-        this.viewLoader = new ViewLoader(services, taskRepository);
+        this.viewLoader = new ViewLoader(services, taskRepository, projectRepository);
         this.connectMode = services.config.remote() ? services.config.serverIP() : "Local";
         log.info("Created GTD Controller");
     }

@@ -1,32 +1,33 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
-import com.melliott.gtdfx.gtdclient.model.Status;
-import com.melliott.gtdfx.gtdclient.model.Task;
-import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.*;
 import com.melliott.gtdfx.gtdclient.model.dto.TaskCreateDTO;
 import com.melliott.gtdfx.gtdclient.service.AppServices;
 import com.melliott.gtdfx.gtdclient.ui.ContextMenuBuilder;
 import com.melliott.gtdfx.gtdclient.ui.TimeAgoTableCell;
 import com.melliott.gtdfx.gtdclient.util.UIUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public class InboxController extends AbstractTaskController {
-    @FXML TableColumn<Task, OffsetDateTime> colSince;
-    @FXML TableColumn<Task, String> colDesc;
-    @FXML TableView<Task> tbTasks;
-    @FXML TextField tfNewTask;
-    @FXML Button btnAdd;
+    @FXML
+    TableColumn<Task, OffsetDateTime> colSince;
+    @FXML
+    TableColumn<Task, String> colDesc;
+    @FXML
+    TableView<Task> tbTasks;
+    @FXML
+    TextField tfNewTask;
+    @FXML
+    Button btnAdd;
 
-    public InboxController(AppServices appServices, TaskRepository taskRepository) {
-        super(taskRepository, appServices.alertService, appServices.statusService);
+    public InboxController(AppServices appServices, TaskRepository taskRepository, ProjectRepository projectRepository) {
+        super(taskRepository, projectRepository, appServices.alertService, appServices.statusService);
     }
 
     @Override
@@ -62,8 +63,16 @@ public class InboxController extends AbstractTaskController {
                         .item("Waiting", () -> moveToWaiting(getSelectedTask()))
                         .item("Someday", () -> moveToSomeday(getSelectedTask().getId()))
                         .build())
+                .item("Make Project", () -> makeProject(getSelectedTask().getId()))
                 .item("Delete", () -> deleteTask(getSelectedTask().getId()))
                 .build());
+
+        List<ProjectItem> projects = projectRepository.getAllProjects();
+        ContextMenuBuilder.MenuBuilder subtaskMenu = new ContextMenuBuilder.MenuBuilder("Make Subtask...");
+        if (!projects.isEmpty()) {
+            projects.forEach(p -> subtaskMenu.item(p.getDescription(), () -> makeSubtask(tbTasks.getSelectionModel().getSelectedItem().getId(), p.getProjectId())));
+            tbTasks.getContextMenu().getItems().add(subtaskMenu.build());
+        }
     }
 
     private Task getSelectedTask() {

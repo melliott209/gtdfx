@@ -1,7 +1,9 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
+import com.melliott.gtdfx.gtdclient.model.ProjectRepository;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
+import com.melliott.gtdfx.gtdclient.model.dto.ProjectItemCreateDTO;
 import com.melliott.gtdfx.gtdclient.model.dto.TaskUpdateDTO;
 import com.melliott.gtdfx.gtdclient.service.AlertService;
 import com.melliott.gtdfx.gtdclient.service.StatusService;
@@ -16,12 +18,14 @@ import java.time.OffsetDateTime;
 
 public abstract class AbstractTaskController implements StatusSpecific {
     protected TaskRepository taskRepository;
+    protected ProjectRepository projectRepository;
     protected AlertService alertService;
     protected StatusService statusService;
     protected ListProperty<Task> tasks;
 
-    protected AbstractTaskController(TaskRepository taskRepository, AlertService alertService, StatusService statusService) {
+    protected AbstractTaskController(TaskRepository taskRepository, ProjectRepository projectRepository, AlertService alertService, StatusService statusService) {
         this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
         this.alertService = alertService;
         this.statusService = statusService;
         tasks = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -108,5 +112,27 @@ public abstract class AbstractTaskController implements StatusSpecific {
         task.setStatus("COMPLETE");
         task.setDateCompleted(OffsetDateTime.now());
         updateTask(task);
+    }
+
+    protected void makeProject(int taskId) {
+        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
+        task.setStatus("PROJECT");
+        updateTask(task);
+
+        ProjectItemCreateDTO projectItem = new ProjectItemCreateDTO(taskId);
+        projectItem.setProjectId(taskId);
+        projectItem.setLevel(0);
+        this.projectRepository.addProject(projectItem);
+    }
+
+    protected void makeSubtask(int taskId, int projectId) {
+        TaskUpdateDTO task = new TaskUpdateDTO(taskId);
+        task.setStatus("PROJECT");
+        updateTask(task);
+
+        ProjectItemCreateDTO projectItem = new ProjectItemCreateDTO(taskId);
+        projectItem.setProjectId(projectId);
+        projectItem.setLevel(1);
+        this.projectRepository.addProject(projectItem);
     }
 }

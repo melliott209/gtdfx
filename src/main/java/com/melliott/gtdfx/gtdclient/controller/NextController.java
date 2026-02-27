@@ -1,5 +1,6 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
+import com.melliott.gtdfx.gtdclient.model.ProjectRepository;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
@@ -20,8 +21,8 @@ public class NextController extends AbstractTaskController {
     @FXML TableColumn<Task, String> colDescNext;
     @FXML Button btnComplete;
 
-    public NextController(AppServices appServices, TaskRepository taskRepository) {
-        super(taskRepository, appServices.alertService, appServices.statusService);
+    public NextController(AppServices appServices, TaskRepository taskRepository, ProjectRepository projectRepository) {
+        super(taskRepository, projectRepository, appServices.alertService, appServices.statusService);
     }
 
     @Override

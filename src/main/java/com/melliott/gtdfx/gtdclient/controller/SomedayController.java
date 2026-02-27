@@ -1,5 +1,6 @@
 package com.melliott.gtdfx.gtdclient.controller;
 
+import com.melliott.gtdfx.gtdclient.model.ProjectRepository;
 import com.melliott.gtdfx.gtdclient.model.Status;
 import com.melliott.gtdfx.gtdclient.model.Task;
 import com.melliott.gtdfx.gtdclient.model.TaskRepository;
@@ -18,8 +19,8 @@ public class SomedayController extends AbstractTaskController {
     @FXML TableColumn<Task, OffsetDateTime> colSinceNext;
     @FXML TableColumn<Task, String> colDescNext;
 
-    public SomedayController(AppServices appServices, TaskRepository taskRepository) {
-        super(taskRepository, appServices.alertService, appServices.statusService);
+    public SomedayController(AppServices appServices, TaskRepository taskRepository, ProjectRepository projectRepository) {
+        super(taskRepository, projectRepository, appServices.alertService, appServices.statusService);
     }
 
     @Override
