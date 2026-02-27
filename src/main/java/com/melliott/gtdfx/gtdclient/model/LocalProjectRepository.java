@@ -71,7 +71,7 @@ public class LocalProjectRepository implements ProjectRepository {
     }
 
     @Override
-    public boolean addProject(ProjectItemCreateDTO newProject) {
+    public void addProject(ProjectItemCreateDTO newProject) {
         String query = """
                 INSERT INTO projects (task_id, project_id, "level")
                 VALUES(?, ?, ?);""";
@@ -79,17 +79,58 @@ public class LocalProjectRepository implements ProjectRepository {
             statement.setInt(1, newProject.getTaskId());
             statement.setInt(2, newProject.getProjectId());
             statement.setInt(3, newProject.getLevel());
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
+            statement.executeUpdate();
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
         }
-        return false;
+    }
+
+    @Override
+    public void deleteProjectAndSubtasks(int id) {
+        getTasksForProject(id).forEach(t -> deleteProjectTasks(t.getId()));
+        deleteTask(id);
+        deleteProjectItems(id);
+    }
+
+    private void deleteTask(int id) {
+        String query = "DELETE FROM tasks WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private void deleteProjectItems(int id) {
+        String query = """
+                        DELETE FROM projects
+                        WHERE project_id = ?;
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private void deleteProjectTasks(int id) {
+        String query = """
+                        DELETE FROM tasks
+                        WHERE id = ?;
+                """;
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     @Override
     public List<Task> getTasksForProject(int projectId) {
-        String query = "SELECT t.description, t.dateCreated, t.dateDue, t.dateCompleted, t.status, t.notes FROM tasks t JOIN projects p ON t.id = p.task_id WHERE p.project_id = ? AND p.level > 0 AND t.status != 'COMPLETE'";
+        String query = "SELECT t.id, t.description, t.dateCreated, t.dateDue, t.dateCompleted, t.status, t.notes FROM tasks t JOIN projects p ON t.id = p.task_id WHERE p.project_id = ? AND p.level > 0 AND t.status != 'COMPLETE'";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, projectId);
             try (ResultSet rs = ps.executeQuery()) {

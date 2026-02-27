@@ -123,6 +123,7 @@ public abstract class AbstractTaskController implements StatusSpecific {
         projectItem.setProjectId(taskId);
         projectItem.setLevel(0);
         this.projectRepository.addProject(projectItem);
+        setContextMenu();
     }
 
     protected void makeSubtask(int taskId, int projectId) {
